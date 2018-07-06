@@ -1,0 +1,67 @@
+service: survey-api
+
+custom:
+  dynamodb:
+    start:
+      migrate: true
+  stage: ${opt:stage, self:provider.stage}
+      
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline # must be last
+
+provider:
+  name: aws
+  profile: survey
+  region: us-east-1
+  runtime: nodejs8.10
+  memorySize: 128
+  timeout: 10
+  stage: dev
+
+  environment:
+    STAGE: ${self:custom.stage}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["UsersDynamoDBTable", "Arn" ] }
+        - { "Fn::GetAtt": ["PaymentsDynamoDBTable", "Arn" ] }
+
+functions:
+  app:
+    handler: dist/handler.index
+    events:
+      - http:
+          path: /
+          method: any
+          cors: true
+      - http:
+          path: '{proxy+}'
+          method: any
+          cors: true
+
+resources:
+  Resources:
+    UsersDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.stage}_surveys
