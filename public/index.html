@@ -22,7 +22,21 @@
             <div class="sv_body">
                 <div id="surveys-list" class="surveys-list">
                     <section>
-                        <button data-bind="click: function() { createSurvey('NewSurvey' + Date.now(), loadSurveys); }">Add</button>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirm-new-survey-modal">Add</button>
+                      <div id="confirm-new-survey-modal" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-body">
+                              <p>Adding a new survey costs 10 MOBI. Would you like to continue?</p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                              <button type="button" class="btn btn-primary" 
+                                data-bind="click: function() { createSurvey('NewSurvey' + Date.now(), loadSurveys); }">Add</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </section>
                     <table class="table table-striped">
                         <tbody>

@@ -51,7 +51,7 @@ app.use('/auth', MobiusAuth)
  */
 
 // New Survey
-app.post('/create', authorize, function(req, res) {
+app.get('/create', authorize, function(req, res) {
   var name = req.query['name']
   db.addSurvey(name, function(result) {
     sendJsonResult(res, {Name: result.name, Id: result.name})
