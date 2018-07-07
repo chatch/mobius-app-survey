@@ -1,21 +1,36 @@
 const express = require('express')
+const Mobius = require('@mobius-network/mobius-client-js')
+const StellarSdk = require('stellar-sdk')
+
 const dbadapter = require('./dbadapter')
+const MobiusApi = require('./mobius/api')
+const MobiusAuth = require('./mobius/auth')
 
-const db = new dbadapter()
-
-var app = express()
-
-// TODO: add AUTH here
-
-// TODO: configure CORS
-
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+require('dotenv').config()
 
 function sendJsonResult(res, obj) {
   res.setHeader('Content-Type', 'application/json')
   res.send(JSON.stringify(obj))
 }
+
+const mobius = new Mobius.Client()
+const db = new dbadapter()
+
+const app = express()
+
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+app.use((req, res, next) => {
+  mobius.network =
+    process.env.NETWORK === 'public'
+      ? StellarSdk.Networks.PUBLIC
+      : StellarSdk.Networks.TESTNET
+  next()
+})
+
+app.use('/api', MobiusApi)
+app.use('/auth', MobiusAuth)
 
 app.get('/getActive', function(req, res) {
   db.getSurveys(function(result) {

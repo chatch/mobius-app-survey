@@ -34,6 +34,8 @@
   "homepage": "https://source.deco.network/hatch/entry-hacksummit-survey#README.md",
   "dependencies": {
     "@mobius-network/mobius-client-js": "^0.5.0",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
     "express": "^4.16.2",
     "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.3.0",
