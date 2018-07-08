@@ -16,10 +16,10 @@ function PostgresDBAdapter() {
     })
   }
 
-  function addSurvey(name, user, callback) {
+  function addSurvey(name, user, completions, callback) {
     db.one(
-      'INSERT INTO surveys (name, user_id, json) VALUES($1, $2, $3) RETURNING *',
-      [name, user, '{}']
+      'INSERT INTO surveys (name, user_id, completions, json) VALUES($1, $2, $3, $4) RETURNING *',
+      [name, user, completions, '{}']
     ).then(callback)
   }
 

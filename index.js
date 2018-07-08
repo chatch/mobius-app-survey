@@ -57,18 +57,19 @@ app.use('/auth', MobiusAuth)
  */
 
 // New Survey
-app.get('/create', authorize, function(req, res) {
-  console.log(`start create: ${Date.now()}`)
-  var name = req.query['name']
+app.get('/create', authorize, function(req, res, next) {
   const user = req.user.sub
+  const name = req.query['name']
+  const completions = req.query['completions']
 
-  db.addSurvey(name, user, async result => {
-    console.log(`db returned: ${Date.now()}`)
+  if (Number.isInteger(Number(completions)) === false || completions < 1) {
+    throw new Error(`completions must be a positive integer`)
+  }
+
+  db.addSurvey(name, user, completions, async result => {
     const dapp = await Mobius.AppBuilder.build(APP_KEY, user)
-    console.log(`before charge: ${Date.now()}`)
-    const response = await dapp.charge(FEE_NEW_SURVEY)
-    console.log(`after charge: ${Date.now()}`)
-    console.log(`charge ${user} new survey fee. tx: ${response.hash}`)
+    const totalFee = FEE_NEW_SURVEY + completions * REWARD_COMPLETE_SURVEY
+    const response = await dapp.charge(totalFee)
     sendJsonResult(res, {
       Name: result.name,
       Id: result.name,
@@ -83,10 +84,10 @@ app.post('/post', authorize, function(req, res) {
   const user = req.user.sub
   db.postResults(postId, surveyResult, result => {
     Mobius.AppBuilder.build(APP_KEY, user).then(dapp => {
-      console.log(`dapp`)
-      dapp.transfer(REWARD_COMPLETE_SURVEY, user).then(tx => {
+      // payout from DApp balance which collected reward amounts when the survey was created
+      dapp.payout(REWARD_COMPLETE_SURVEY, user).then(tx => {
         console.log(`payed ${user} complete survey fee. rsp: ${tx.hash}`)
-        sendJsonResult(res, {NewBalance: dapp.userBalance})
+        sendJsonResult(res, {})
       })
     })
   })

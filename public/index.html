@@ -41,9 +41,32 @@
                     <div id="confirm-new-survey-modal" class="modal fade" tabindex="-1" role="dialog">
                       <div class="modal-dialog" role="document">
                         <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title">Add New Survey</h4>
+                          </div>
                           <div class="modal-body">
-                            <p>Adding a new survey costs 10 MOBI.</p>
-                            <p>Would you like to continue?</p>
+                            <div class="container">
+                              <form class="form-horizontal">
+                                <div class="form-group">
+                                  <label class="col-md-2 control-label">How many survey completions?</label>
+                                  <div class="col-md-2">
+                                    <input id="survey-completions" type="number" value="20" class="form-control"/>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-md-2 control-label">Fee</label>
+                                  <div class="col-md-2">
+                                    <p class="form-control-static">10 MOBI</p>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="col-md-2 control-label">Total Cost</label>
+                                  <div class="col-md-2">
+                                    <p class="form-control-static"><span id="total-cost">10</span> MOBI</p>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

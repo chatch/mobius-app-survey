@@ -1,3 +1,7 @@
+// server .env for these values:
+const FEE_NEW_SURVEY = 10
+const REWARD_COMPLETE_SURVEY = 1
+
 /*******    Utilities     *******/
 
 function getUrlVars() {
@@ -220,7 +224,11 @@ function SurveyListManager() {
 
   self.createSurvey = function(name, onCreate) {
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', serverUri('create') + '?name=' + name)
+    const completions = $('#survey-completions').val()
+    xhr.open(
+      'GET',
+      serverUri('create') + `?name=${name}&completions=${completions}`
+    )
     setHeaders(xhr)
     xhr.onload = function() {
       $('#add-button').button('reset')
@@ -250,6 +258,22 @@ function SurveyListManager() {
 
 function initSurveyList() {
   checkToken()
+
+  const calcFee = () => {
+    const count = $('#survey-completions').val()
+    if (Number.isInteger(Number(count)) && count > 0) {
+      const totalFee = FEE_NEW_SURVEY + count * REWARD_COMPLETE_SURVEY
+      $('#total-cost').text(totalFee)
+    } else {
+      console.error(`completions value is not a positive number`)
+    }
+  }
+
+  calcFee()
+
+  $('#survey-completions').keyup(calcFee)
+  $('#survey-completions').change(calcFee)
+
   ko.applyBindings(
     new SurveyListManager(''),
     document.getElementById('surveys-list')
@@ -348,23 +372,20 @@ function initSurveyView() {
   var surveyId = decodeURI(getParams()['id'])
   var model = new Survey.Model({surveyId: surveyId}) //, surveyPostId: surveyId})
   model.css = css
-  // model.surveyPostId = surveyId
-  // model.onComplete.clear()
   model.onComplete.add(function(sender, options) {
-    console.log(`onComplete fired`)
     var xhr = new XMLHttpRequest()
     xhr.open('POST', '/post')
     setHeadersJSON(xhr)
-    // xhr.onload = xhr.onerror = function() {
-    //   if (xhr.status == 200) {
-    //     options.showDataSavingSuccess() //you may pass a text parameter to show your own text
-    //     //Or you may clear all messages
-    //     //options.showDataSavingClear();
-    //   } else {
-    //     //Error
-    //     options.showDataSavingError() //you may pass a text parameter to show your own text
-    //   }
-    // }
+    xhr.onload = xhr.onerror = function() {
+      if (xhr.status == 200) {
+        options.showDataSavingSuccess() //you may pass a text parameter to show your own text
+        //Or you may clear all messages
+        //options.showDataSavingClear();
+      } else {
+        //Error
+        options.showDataSavingError() //you may pass a text parameter to show your own text
+      }
+    }
     xhr.send(JSON.stringify({postId: surveyId, surveyResult: sender.data}))
   })
   window.survey = model
