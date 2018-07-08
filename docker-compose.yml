@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  database:
+    build: ./database 
+    ports:
+      - 5432:5432
+  server:
+    build: ./server
+    ports:
+      - 3000:3000
+      

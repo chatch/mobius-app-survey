@@ -14,7 +14,7 @@ RUN apt-get -y install postgresql postgresql-contrib
 
 USER postgres
 
-ADD initdb /var/lib/postgresql
+ADD init.sql /var/lib/postgresql
 
 RUN /etc/init.d/postgresql start &&\
     psql --command "ALTER USER postgres WITH PASSWORD '123456';"&&\
