@@ -27,7 +27,8 @@
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
                             <div class="modal-body">
-                              <p>Adding a new survey costs 10 MOBI. Would you like to continue?</p>
+                              <p>Adding a new survey costs 10 MOBI.</p>
+                              <p>Would you like to continue?</p>
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -44,9 +45,9 @@
                             <tr>
                                 <td data-bind="text: name"></td>
                                 <td>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'survey.html?id=' + ko.unwrap(id) }">Run</a>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'editor.html?id=' + ko.unwrap(id)+'&name='+ko.unwrap(name) }">Edit</a>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'results.html?id=' + ko.unwrap(id) }">Results</a>
+                                    <a class="sv_button_link" data-bind="attr: { href: 'survey.html?id=' + ko.unwrap(id) + '&token=' + getToken()}">Run</a>
+                                    <a class="sv_button_link" data-bind="attr: { href: 'editor.html?id=' + ko.unwrap(id)+'&name='+ko.unwrap(name) + '&token=' + getToken() }">Edit</a>
+                                    <a class="sv_button_link" data-bind="attr: { href: 'results.html?id=' + ko.unwrap(id) + '&token=' + getToken() }">Results</a>
                                     <span class="sv_button_link sv_button_delete" data-bind="click: function() { $parent.deleteSurvey(ko.unwrap(id), $parent.loadSurveys); }">Delete</span>
                                 </td>
                             </tr>
@@ -57,8 +58,12 @@
             </div>
         </div>
     </div>
+    <script src="./main.js"></script>
+    <script>
+      $(document).ready(function() {
+        initSurveyList()
+      })
+    </script>
 </body>
-
-<script src="index.js"></script>
 
 </html>
