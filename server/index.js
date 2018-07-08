@@ -13,9 +13,10 @@ const {
   APP_DOMAIN,
   APP_KEY,
   APP_STORE,
-  FEE_NEW_SURVEY,
-  REWARD_COMPLETE_SURVEY,
 } = process.env
+
+const FEE_NEW_SURVEY = Number(process.env.FEE_NEW_SURVEY)
+const REWARD_COMPLETE_SURVEY = Number(process.env.REWARD_COMPLETE_SURVEY)
 
 const mobius = new Mobius.Client()
 const db = new dbadapter()
@@ -60,15 +61,16 @@ app.use('/auth', MobiusAuth)
 app.get('/create', authorize, function(req, res, next) {
   const user = req.user.sub
   const name = req.query['name']
-  const completions = req.query['completions']
+  const completions = Number(req.query['completions'])
 
-  if (Number.isInteger(Number(completions)) === false || completions < 1) {
+  if (Number.isInteger(completions) === false || completions < 1) {
     throw new Error(`completions must be a positive integer`)
   }
 
   db.addSurvey(name, user, completions, async result => {
     const dapp = await Mobius.AppBuilder.build(APP_KEY, user)
     const totalFee = FEE_NEW_SURVEY + completions * REWARD_COMPLETE_SURVEY
+    console.log(`totalFee: ${totalFee}`);
     const response = await dapp.charge(totalFee)
     sendJsonResult(res, {
       Name: result.name,
