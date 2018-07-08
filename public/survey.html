@@ -3,7 +3,8 @@
 
 <head>
     <title>Welcome to SurveyJS</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js"></script>
     <script src="https://unpkg.com/survey-knockout"></script>
     <link rel="stylesheet" href="https://unpkg.com/survey-knockout/survey.css" />
     <link rel="stylesheet" href="./index.css" />
@@ -12,12 +13,17 @@
 <body>
     <div class="survey-page-header">
         <div class="sv_main survey-page-header-content">
-            <button onclick="window.location = serverUri('')">&lt&nbspBack</button>
+            <button onclick="window.location = clientUri('')">&lt&nbspBack</button>
         </div>
     </div>
     <div id="surveyElement">
     </div>
     <script src="./main.js"></script>
+    <script>
+      $(document).ready(function() {
+        initSurveyView()
+      })
+    </script>
 </body>
 
 </html>

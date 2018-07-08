@@ -23,7 +23,7 @@
 <body>
     <div class="survey-page-header">
         <div class="sv_main survey-page-header-content">
-            <button onclick="window.location = serverUri('')">&lt&nbspBack</button>
+            <button onclick="window.location = clientUri('')">&lt&nbspBack</button>
         </div>
     </div>
     <div class="sv_main sv_frame sv_default_css">
@@ -53,6 +53,11 @@
     </div>
 
     <script src="./main.js"></script>
+    <script>
+      $(document).ready(function() {
+        initSurveyEditor()
+      })
+    </script>
 </body>
 
 </html>

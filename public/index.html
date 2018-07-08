@@ -14,49 +14,69 @@
 
 <body>
     <div class="sv_main sv_frame sv_default_css">
-        <div class="sv_custom_header"></div>
         <div class="sv_container">
+            <div class="sv_header_dapp_status">
+              <div class="fees-notice">
+                <div><b>Rewards:</b> Fill out a survey (1 MOBI)</div>
+                <div><b>Fees:</b> Create New Survey (10 MOBI)</div>
+                <div><small>NOTE: ALL fees will be donated to <a href="https://stemchain.io">STEMchain</a> projects.</small></div>
+              </div>
+              <div>
+                <div><b>Your Balance:</b> <span id="mobi-user-balance">loading ...</span> MOBI</div>
+                <div><b>DAPP Balance:</b> <span id="mobi-app-balance">loading ...</span> MOBI</div>
+              </div>
+            </div>
             <div class="sv_header">
                 <h3>SurveyJS on Mobius</h3>
             </div>
             <div class="sv_body">
-                <div id="surveys-list" class="surveys-list">
-                    <section>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirm-new-survey-modal">Add</button>
-                      <div id="confirm-new-survey-modal" class="modal fade" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-body">
-                              <p>Adding a new survey costs 10 MOBI.</p>
-                              <p>Would you like to continue?</p>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                              <button type="button" class="btn btn-primary" 
-                                data-bind="click: function() { createSurvey('NewSurvey' + Date.now(), loadSurveys); }">Add</button>
-                            </div>
+              <div id="surveys-list" class="surveys-list">
+                  <section>
+                    <button id="add-button" type="button" class="btn btn-primary" 
+                            data-loading-text="Loading..." 
+                            data-toggle="modal" 
+                            data-target="#confirm-new-survey-modal">
+                        Add
+                    </button>
+                    <div id="confirm-new-survey-modal" class="modal fade" tabindex="-1" role="dialog">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-body">
+                            <p>Adding a new survey costs 10 MOBI.</p>
+                            <p>Would you like to continue?</p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" 
+                              data-bind="click: function() { $('#confirm-new-survey-modal').modal('hide'); createSurvey('NewSurvey' + Date.now(), loadSurveys); }">Add</button>
                           </div>
                         </div>
                       </div>
-                    </section>
-                    <table class="table table-striped">
-                        <tbody>
-                            <!-- ko foreach: availableSurveys -->
-                            <tr>
-                                <td data-bind="text: name"></td>
-                                <td>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'survey.html?id=' + ko.unwrap(id) + '&token=' + getToken()}">Run</a>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'editor.html?id=' + ko.unwrap(id)+'&name='+ko.unwrap(name) + '&token=' + getToken() }">Edit</a>
-                                    <a class="sv_button_link" data-bind="attr: { href: 'results.html?id=' + ko.unwrap(id) + '&token=' + getToken() }">Results</a>
-                                    <span class="sv_button_link sv_button_delete" data-bind="click: function() { $parent.deleteSurvey(ko.unwrap(id), $parent.loadSurveys); }">Delete</span>
-                                </td>
-                            </tr>
-                            <!-- /ko -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    </div>
+                  </section>
+                  <table class="table table-striped">
+                      <tbody>
+                          <!-- ko foreach: availableSurveys -->
+                          <tr>
+                              <td data-bind="text: name"></td>
+                              <td>
+                                  <a class="sv_button_link" data-bind="attr: { href: 'survey.html?id=' + ko.unwrap(id) + '&token=' + getToken()}">Run</a>
+                                  <a class="sv_button_link" data-bind="attr: { href: 'editor.html?id=' + ko.unwrap(id)+'&name='+ko.unwrap(name) + '&token=' + getToken() }">Edit</a>
+                                  <a class="sv_button_link" data-bind="attr: { href: 'results.html?id=' + ko.unwrap(id) + '&token=' + getToken() }">Results</a>
+                                  <span class="sv_button_link sv_button_delete" data-bind="click: function() { $parent.deleteSurvey(ko.unwrap(id), $parent.loadSurveys); }">Delete</span>
+                              </td>
+                          </tr>
+                          <!-- /ko -->
+                      </tbody>
+                  </table>
+              </div>
         </div>
+        <footer class="container">
+          <div class="row">
+            <div class="col-md-6">Powered by <a href="https://mobius.network/">Mobius</a>, <a href="https://stellar.org/">Stellar</a> and <a href="https://surveyjs.io/">SurveyJS</a></div>
+          </div>
+        </footer>
+      </div>
     </div>
     <script src="./main.js"></script>
     <script>

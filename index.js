@@ -9,7 +9,13 @@ const MobiusAuth = require('./auth')
 
 require('dotenv').config()
 
-const {APP_DOMAIN, APP_KEY, APP_STORE} = process.env
+const {
+  APP_DOMAIN,
+  APP_KEY,
+  APP_STORE,
+  FEE_NEW_SURVEY,
+  REWARD_COMPLETE_SURVEY,
+} = process.env
 
 const mobius = new Mobius.Client()
 const db = new dbadapter()
@@ -52,31 +58,51 @@ app.use('/auth', MobiusAuth)
 
 // New Survey
 app.get('/create', authorize, function(req, res) {
+  console.log(`start create: ${Date.now()}`)
   var name = req.query['name']
-  db.addSurvey(name, function(result) {
-    sendJsonResult(res, {Name: result.name, Id: result.name})
+  const user = req.user.sub
+
+  db.addSurvey(name, user, async result => {
+    console.log(`db returned: ${Date.now()}`)
+    const dapp = await Mobius.AppBuilder.build(APP_KEY, user)
+    console.log(`before charge: ${Date.now()}`)
+    const response = await dapp.charge(FEE_NEW_SURVEY)
+    console.log(`after charge: ${Date.now()}`)
+    console.log(`charge ${user} new survey fee. tx: ${response.hash}`)
+    sendJsonResult(res, {
+      Name: result.name,
+      Id: result.name,
+    })
   })
 })
 
 // Survey Result - one user is posting answers
 app.post('/post', authorize, function(req, res) {
-  var postId = req.body.postId
-  var surveyResult = req.body.surveyResult
-  db.postResults(postId, surveyResult, function(result) {
-    sendJsonResult(res, result.json)
+  const postId = req.body.postId
+  const surveyResult = req.body.surveyResult
+  const user = req.user.sub
+  db.postResults(postId, surveyResult, result => {
+    Mobius.AppBuilder.build(APP_KEY, user).then(dapp => {
+      console.log(`dapp`)
+      dapp.transfer(REWARD_COMPLETE_SURVEY, user).then(tx => {
+        console.log(`payed ${user} complete survey fee. rsp: ${tx.hash}`)
+        sendJsonResult(res, {NewBalance: dapp.userBalance})
+      })
+    })
   })
 })
 
 app.delete('/delete', authorize, function(req, res) {
   var surveyId = req.query['id']
+  console.log(`Delete ${surveyId}`)
   db.deleteSurvey(surveyId, function(result) {
     sendJsonResult(res, {})
   })
 })
 
 app.put('/changeName', authorize, function(req, res) {
-  var id = req.query['id']
-  var name = req.query['name']
+  var id = req.body['id']
+  var name = req.body['name']
   db.changeName(id, name, function(result) {
     sendJsonResult(res, result)
   })
@@ -132,6 +158,15 @@ app.get('/balance', authorize, async (req, res, next) => {
   }
 })
 
+app.get('/appBalance', authorize, async (req, res, next) => {
+  try {
+    const dapp = await Mobius.AppBuilder.build(APP_KEY, req.user.sub)
+    res.json({balance: dapp.appBalance})
+  } catch (e) {
+    next(e)
+  }
+})
+
 app.use(express.static(__dirname + '/public'))
 
 app.use(logErrors)
@@ -148,6 +183,8 @@ function getToken(req) {
     req.headers.authorization.split(' ')[0] === 'Bearer'
   ) {
     return req.headers.authorization.split(' ')[1]
+  } else if (req.query && req.query.token) {
+    return req.query.token
   }
   return null
 }

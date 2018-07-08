@@ -16,18 +16,18 @@ function PostgresDBAdapter() {
     })
   }
 
-  function addSurvey(name, callback) {
-    db.one('INSERT INTO surveys (name, json) VALUES($1, $2) RETURNING *', [
-      name,
-      '{}',
-    ]).then(callback)
+  function addSurvey(name, user, callback) {
+    db.one(
+      'INSERT INTO surveys (name, user_id, json) VALUES($1, $2, $3) RETURNING *',
+      [name, user, '{}']
+    ).then(callback)
   }
 
-  function postResults(postId, json, callback) {
-    db.one('INSERT INTO results (postid, json) VALUES($1, $2) RETURNING *', [
-      postId,
-      json,
-    ]).then(callback)
+  function postResults(postId, user, json, callback) {
+    db.one(
+      'INSERT INTO results (postid, user_id, json) VALUES($1, $2, $3) RETURNING *',
+      [postId, user, json]
+    ).then(callback)
   }
 
   function getResults(postId, callback) {

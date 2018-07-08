@@ -7,8 +7,19 @@ body {
 section {
   margin: 2em 0;
 }
+
+footer {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .page-link {
   margin: 1em 2em;
+}
+
+.sv_header_dapp_status {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .survey-page-header,
@@ -89,4 +100,8 @@ section {
 
 .fork_me_on_github img {
   z-index: 1;
+}
+
+.fees-notice {
+  float: right;
 }

@@ -31,13 +31,24 @@ function setHeaders(xhr) {
   xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`)
 }
 
-function serverUri(path) {
-  return `/${path}?token=${getToken()}`
+function setHeadersJSON(xhr) {
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+  xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`)
 }
 
-/*******    DApp Store Token     *******/
+function serverUri(path) {
+  return `/${path ? path : ''}`
+}
+
+function clientUri(path) {
+  return `/${path ? path : ''}?token=${getToken()}`
+}
+
+/*******    DApp Store     *******/
 
 const TOKEN_KEY = 'token'
+
+let intervalIDLoadBalance = null
 
 // check for the JWT token assigned by the Mobius Dapp Store auth flow
 // (auth flow gets a token from our /auth endpoint)
@@ -47,6 +58,11 @@ function checkToken() {
     window.location.href = '/401.html'
   } else {
     storeToken(jwtToken)
+    // clearInterval(intervalIDLoadBalance)
+    if (intervalIDLoadBalance == null) {
+      loadBalances()
+      intervalIDLoadBalance = setInterval(loadBalances, 15000)
+    }
   }
 }
 
@@ -60,6 +76,37 @@ function getToken() {
 
 function removeToken() {
   localStorage.removeItem(TOKEN_KEY)
+}
+
+function loadUserBalance() {
+  var xhr = new XMLHttpRequest()
+  xhr.open('GET', serverUri('balance'), true)
+  setHeaders(xhr)
+  xhr.onload = function() {
+    var result = xhr.response ? JSON.parse(xhr.response) : null
+    if (xhr.status === 200) {
+      $('#mobi-user-balance').text(result.balance)
+    }
+  }
+  xhr.send()
+}
+
+function loadAppBalance() {
+  var xhr = new XMLHttpRequest()
+  xhr.open('GET', serverUri('appBalance'), true)
+  setHeaders(xhr)
+  xhr.onload = function() {
+    var result = xhr.response ? JSON.parse(xhr.response) : null
+    if (xhr.status === 200) {
+      $('#mobi-app-balance').text(result.balance)
+    }
+  }
+  xhr.send()
+}
+
+function loadBalances() {
+  loadUserBalance()
+  loadAppBalance()
 }
 
 /*******    Survey Editor     *******/
@@ -89,28 +136,45 @@ function postEdit() {
   var $titleEditor = jQuery('#sjs_editor_title_edit')
   surveyName = $titleEditor.find('input')[0].value
   setSurveyName(surveyName)
-  jQuery
-    .get('/changeName?id=' + surveyId + '&name=' + surveyName, function(data) {
-      surveyId = data.Id
-    })
-    .fail(function(error) {
+
+  const surveyId = decodeURI(getParams()['id'])
+
+  var xhr = new XMLHttpRequest()
+  xhr.open('PUT', serverUri('changeName'))
+  setHeadersJSON(xhr)
+  xhr.onload = function() {
+    var result = xhr.response ? JSON.parse(xhr.response) : null
+    if (xhr.status !== 200) {
       surveyName = oldName
       setSurveyName(surveyName)
       alert(JSON.stringify(error))
-    })
+    }
+  }
+  xhr.send(JSON.stringify({id: surveyId, name: surveyName}))
 }
 
 function initSurveyEditor() {
   checkToken()
-  var accessKey = ''
-  var editor = new SurveyEditor.SurveyEditor('editor')
-  var surveyId = decodeURI(getParams()['id'])
-  surveyName = decodeURI(getParams()['name'])
+
+  // set to blank which will default to the window.location
+  // if not overridden the surveyjs backend service will be used
+  Survey.dxSurveyService.serviceUrl = ''
+
+  const editorOptions = {
+    questionTypes: ['text', 'checkbox', 'radiogroup', 'dropdown'],
+  }
+  const editor = new SurveyEditor.SurveyEditor('editor', editorOptions)
+
+  const surveyId = decodeURI(getParams()['id'])
+  const surveyName = decodeURI(getParams()['name'])
+
   editor.loadSurvey(surveyId)
+
   editor.saveSurveyFunc = function(saveNo, callback) {
     var xhr = new XMLHttpRequest()
-    xhr.open('POST', serverUri('changeJson'))
-    setHeaders(xhr)
+    xhr.open('PUT', serverUri('changeJson'))
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+    xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`)
     xhr.onload = function() {
       var result = xhr.response ? JSON.parse(xhr.response) : null
       if (xhr.status === 200) {
@@ -121,6 +185,7 @@ function initSurveyEditor() {
       JSON.stringify({Id: surveyId, Json: editor.text, Text: editor.text})
     )
   }
+
   editor.isAutoSave = true
   editor.showState = true
   editor.showOptions = true
@@ -155,26 +220,28 @@ function SurveyListManager() {
 
   self.createSurvey = function(name, onCreate) {
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', serverUri('create') + '&name=' + name)
+    xhr.open('GET', serverUri('create') + '?name=' + name)
     setHeaders(xhr)
     xhr.onload = function() {
+      $('#add-button').button('reset')
       const result = xhr.response ? JSON.parse(xhr.response) : null
       !!onCreate && onCreate(xhr.status == 200, result, xhr.response)
     }
+    $('#add-button').button('loading')
+    $('#Searching_Modal').modal('show')
     xhr.send()
   }
 
   self.deleteSurvey = function(id, onDelete) {
     if (confirm('Are you sure?')) {
       const xhr = new XMLHttpRequest()
-      xhr.open('GET', serverUri('delete') + '&id=' + id)
+      xhr.open('DELETE', serverUri('delete') + '?id=' + id)
       setHeaders(xhr)
       xhr.onload = function() {
         const result = xhr.response ? JSON.parse(xhr.response) : null
         !!onDelete && onDelete(xhr.status == 200, result, xhr.response)
       }
       xhr.send()
-      window.location = '/'
     }
   }
 
@@ -204,7 +271,7 @@ function SurveyResultsManager() {
 
   self.loadResults = function() {
     var xhr = new XMLHttpRequest()
-    xhr.open('GET', serverUri('results') + '&postId=' + self.surveyId)
+    xhr.open('GET', serverUri('results') + '?postId=' + self.surveyId)
     setHeaders(xhr)
     xhr.onload = function() {
       var result = xhr.response ? JSON.parse(xhr.response) : []
@@ -279,12 +346,27 @@ function initSurveyView() {
   }
 
   var surveyId = decodeURI(getParams()['id'])
-  var model = new Survey.Model({surveyId: surveyId, surveyPostId: surveyId})
+  var model = new Survey.Model({surveyId: surveyId}) //, surveyPostId: surveyId})
   model.css = css
+  // model.surveyPostId = surveyId
+  // model.onComplete.clear()
+  model.onComplete.add(function(sender, options) {
+    console.log(`onComplete fired`)
+    var xhr = new XMLHttpRequest()
+    xhr.open('POST', '/post')
+    setHeadersJSON(xhr)
+    // xhr.onload = xhr.onerror = function() {
+    //   if (xhr.status == 200) {
+    //     options.showDataSavingSuccess() //you may pass a text parameter to show your own text
+    //     //Or you may clear all messages
+    //     //options.showDataSavingClear();
+    //   } else {
+    //     //Error
+    //     options.showDataSavingError() //you may pass a text parameter to show your own text
+    //   }
+    // }
+    xhr.send(JSON.stringify({postId: surveyId, surveyResult: sender.data}))
+  })
   window.survey = model
   model.render('surveyElement')
 }
-
-/*******    Check Auth     *******/
-
-checkToken()
