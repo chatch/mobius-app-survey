@@ -1,3 +1,7 @@
+// localStorage keys
+const TOKEN_KEY = 'token'
+const USER_KEY = 'userid'
+
 // server .env for these values:
 const FEE_NEW_SURVEY = 10
 const REWARD_COMPLETE_SURVEY = 1
@@ -50,8 +54,6 @@ function clientUri(path) {
 
 /*******    DApp Store     *******/
 
-const TOKEN_KEY = 'token'
-
 let intervalIDLoadBalance = null
 
 // check for the JWT token assigned by the Mobius Dapp Store auth flow
@@ -62,6 +64,7 @@ function checkToken() {
     window.location.href = '/401.html'
   } else {
     storeToken(jwtToken)
+    loadUser()
     // clearInterval(intervalIDLoadBalance)
     if (intervalIDLoadBalance == null) {
       loadBalances()
@@ -78,8 +81,25 @@ function getToken() {
   return localStorage.getItem(TOKEN_KEY)
 }
 
-function removeToken() {
-  localStorage.removeItem(TOKEN_KEY)
+function loadUser() {
+  var xhr = new XMLHttpRequest()
+  xhr.open('GET', serverUri('test'), true)
+  setHeaders(xhr)
+  xhr.onload = function() {
+    var result = xhr.response ? JSON.parse(xhr.response) : null
+    if (xhr.status === 200) {
+      storeUser(result.user.sub)
+    }
+  }
+  xhr.send()
+}
+
+function storeUser(user) {
+  localStorage.setItem(USER_KEY, user)
+}
+
+function getUser() {
+  return localStorage.getItem(USER_KEY)
 }
 
 function loadUserBalance() {

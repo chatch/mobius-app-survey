@@ -84,7 +84,7 @@ app.post('/post', authorize, function(req, res) {
   const postId = req.body.postId
   const surveyResult = req.body.surveyResult
   const user = req.user.sub
-  db.postResults(postId, surveyResult, result => {
+  db.postResults(postId, user, surveyResult, result => {
     Mobius.AppBuilder.build(APP_KEY, user).then(dapp => {
       // payout from DApp balance which collected reward amounts when the survey was created
       dapp.payout(REWARD_COMPLETE_SURVEY, user).then(tx => {
