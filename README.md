@@ -1,19 +1,23 @@
-# SurveyJS in Mobius
+# Survey Opinion Rewards on Mobius
 
-This is a clone of the [SurveyJS demo app](https://github.com/surveyjs/surveyjs-nodejs) for the Mobius DApp store.
+Create surveys and reward those who complete surveys with MOBI tokens. This operates something like Google Opinion Rewards but for the Mobius store.
 
-This version adds the ability to pay survey participants. It also .......
+A base fee of 10 MOBI is charged to create a survey. In addition 1 MOBI per completed survey must be provisioned to reward participants. On survey create you can specify how many survey completions you would like to target. So for example if you want 100 users to complete your survey then the cost of survey creation will be 100 MOBI (to be payed to 100 users as reward) plus 10 MOBI base fee for a total of 110 MOBI.
 
-## Overview
+The 10 MOBI base fee is collected by the DApp and will be later exchanged for STEM tokens and donated to [STEMchain](https://stemchain.io) approved projects.
 
-How it flows on Mobius ... USers, survey creators, etc. ....
+## Use
+
+Go to the [Mobius App store](https://store.mobius.network/) and find the "Survey Rewards" app.
+
+## Technology
+
+[Mobius](https://mobius.network/) - leverages the Mobius platform to provide crypto payments and authentication 
+[SurveyJS](https://surveyjs.io/) - uses the SurveyJS libraries and editor and this app based on the [SurveyJS demo app](https://github.com/surveyjs/surveyjs-nodejs)
 
 ## Setup
 
-TODO: Add run local dev env notes
-
-TODO: Add run Docker notes once it's fully configured and working ...
-
-## Config
-
-TODO: Describe each of the .env configuration variables here ...
+ * generate a DApp account. See [Mobius docs](https://docs.mobius.network/docs/installation) for more information.
+ * copy and fill out one of the config files .env.public.example or .env.test.example to .env.
+ * install docker and docker-compose
+ * run "docker-compose up"
