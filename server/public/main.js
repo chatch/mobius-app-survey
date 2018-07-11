@@ -6,6 +6,9 @@ const USER_KEY = 'userid'
 const FEE_NEW_SURVEY = 10
 const REWARD_COMPLETE_SURVEY = 1
 
+// balance refresh rate
+const BALANCE_REFRESH_RATE = 15000 // millis
+
 /*******    Utilities     *******/
 
 function getUrlVars() {
@@ -34,6 +37,10 @@ function getParams() {
   return result
 }
 
+function stripOutToken(url) {
+  return url.replace(/token=[^=&]*/, '')
+}
+
 function setHeaders(xhr) {
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
   xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`)
@@ -48,10 +55,6 @@ function serverUri(path) {
   return `/${path ? path : ''}`
 }
 
-function clientUri(path) {
-  return `/${path ? path : ''}?token=${getToken()}`
-}
-
 /*******    DApp Store     *******/
 
 let intervalIDLoadBalance = null
@@ -59,17 +62,27 @@ let intervalIDLoadBalance = null
 // check for the JWT token assigned by the Mobius Dapp Store auth flow
 // (auth flow gets a token from our /auth endpoint)
 function checkToken() {
+  // check if it's on the URI - should happen only when the DApp store directs
+  // user to the app; if it's there store it and init the page
   const jwtToken = getUrlVars()[TOKEN_KEY]
-  if (!jwtToken) {
-    window.location.href = '/401.html'
-  } else {
+  if (jwtToken) {
     storeToken(jwtToken)
-    loadUser()
-    // clearInterval(intervalIDLoadBalance)
-    if (intervalIDLoadBalance == null) {
-      loadBalances()
-      intervalIDLoadBalance = setInterval(loadBalances, 15000)
+    // strip token from the URL so it doesn't get copied around etc.
+    window.location.replace(stripOutToken(window.location.href))
+  } else {
+    // check if token is in localstorage from a previous page load
+    const lsToken = getToken()
+    // no token - show the 401
+    if (!lsToken || lsToken.length <= 0) {
+      window.location.href = '/401.html'
+      return
     }
+  }
+
+  loadUser()
+  if (intervalIDLoadBalance == null) {
+    loadBalances()
+    intervalIDLoadBalance = setInterval(loadBalances, BALANCE_REFRESH_RATE)
   }
 }
 
