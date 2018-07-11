@@ -111,13 +111,7 @@
         </footer>
       </div>
     </div>
-    <script src="./main.js"></script>
-    <script>
-      $(document).ready(function() {
-        initSurveyList()
-      })
-    </script>
-
+    
     <!-- Modal: About -->
     <div id="info-modal" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -158,6 +152,16 @@
       </div>
     </div>
 
+    <script src="./main.js"></script>
+    <script>
+      $(document).ready(function() {
+        // doing this in app as the current setup (elb) doesn't support this automatically
+        if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+          window.location.href = window.location.href.replace('http:', 'https:')
+        }
+        initSurveyList()
+      })
+    </script>
 
 </body>
 
