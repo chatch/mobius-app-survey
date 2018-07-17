@@ -1,0 +1,18 @@
+#
+# Testnet app configuration
+#
+# COPY me to testnet.yml and set APP_KEY
+#
+
+NETWORK: 'testnet'
+
+APP_NAME: 'Survey Rewards Testnet'
+APP_DOMAIN: 'testnet.surveyrewards.network'
+APP_STORE: 'store.beta.mobius.network'
+APP_KEY: '<Stellar Secret Key for the DApp>'
+
+# charge survey creator (MOBI)
+FEE_NEW_SURVEY: 10
+
+# pay survey completer from the survey creator account (MOBI)
+REWARD_COMPLETE_SURVEY: 1

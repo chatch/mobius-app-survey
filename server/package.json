@@ -1,45 +1,38 @@
 {
-  "name": "surveyjs-nodejs-mobius",
-  "version": "0.0.1",
-  "description": "SurveyJS app modified as a Mobius DApp to accept and make payments",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@source.deco.network:hatch/entry-hacksummit-survey.git"
-  },
-  "keywords": [
-    "survey",
-    "surveyjs",
-    "service",
-    "nodejs",
-    "mobius",
-    "mobius.network",
-    "stellar",
-    "XLM",
-    "MOBI",
-    "cryptocurrency",
-    "hacksummit"
-  ],
-  "author": "SurveyJS",
-  "contributors": [
-    "Chris Hatch <hatch@tuta.io>"
-  ],
+  "name": "survey-rewards-mobius-server",
+  "version": "0.0.2",
   "license": "MIT",
-  "bugs": {
-    "url": "https://source.deco.network/hatch/entry-hacksummit-survey/issues"
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && serverless deploy",
+    "test": "IS_OFFLINE=true jest src",
+    "test-watch": "IS_OFFLINE=true jest src --watch",
+    "start": "npm run build && sls offline start -s local --noAuth",
+    "offline-setup": "sls dynamodb install"
   },
-  "homepage": "https://source.deco.network/hatch/entry-hacksummit-survey#README.md",
   "dependencies": {
+    "@aws/dynamodb-data-mapper": "^0.7.0",
+    "@aws/dynamodb-data-mapper-annotations": "^0.7.0",
     "@mobius-network/mobius-client-js": "^0.5.0",
+    "aws-sdk": "^2.275.1",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.2",
     "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.3.0",
-    "pg-promise": "^7.3.2",
+    "serverless-http": "^1.6.0",
     "stellar-sdk": "^0.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.0",
+    "@types/jest": "^23.1.6",
+    "jest": "^23.4.1",
+    "jest-cli": "^23.4.1",
+    "serverless-domain-manager": "^2.4.0",
+    "serverless-dynamodb-local": "^0.2.30",
+    "serverless-offline": "^3.25.4",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
   }
 }

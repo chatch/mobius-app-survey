@@ -1,0 +1,18 @@
+#
+# Local app configuration
+#
+# COPY me to local.yml and set APP_KEY
+#
+
+NETWORK: local
+
+APP_NAME: 'Survey Local App'
+APP_DOMAIN: 'localhost'
+APP_STORE: 'store.beta.mobius.network'
+APP_KEY: '<Stellar Secret Key for the DApp>'
+
+# charge survey creator (MOBI)
+FEE_NEW_SURVEY: 10
+
+# pay survey completer from the survey creator account (MOBI)
+REWARD_COMPLETE_SURVEY: 1

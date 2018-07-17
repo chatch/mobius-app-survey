@@ -1,0 +1,29 @@
+{
+  "name": "mobius-app-survey",
+  "version": "0.0.2",
+  "description": "Survey Rewards App for Mobius DApp store using SurveyJS for surveys",
+  "author": "Chris Hatch <hatch@tuta.io>",
+  "license": "MIT",
+  "homepage": "https://surveyrewards.network",
+  "repository": "chatch/mobius-app-survey",
+  "bugs": {
+    "url": "https://github.com/chatch/mobius-app-survey/issues"
+  },
+  "scripts": {
+    "build": "cd client && npm run build && cd ../server && npm run build",
+    "deploy": "cd server && npm run deploy"
+  },
+  "keywords": [
+    "survey",
+    "surveyjs",
+    "service",
+    "nodejs",
+    "mobius",
+    "mobius.network",
+    "stellar",
+    "XLM",
+    "MOBI",
+    "cryptocurrency",
+    "hacksummit"
+  ]
+}
