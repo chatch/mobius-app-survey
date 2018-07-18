@@ -1,12 +1,12 @@
 #
-# Local app configuration
+# Development app configuration
 #
-# COPY me to local.yml and set APP_KEY
+# COPY me to dev.yml and set APP_KEY
 #
 
-NETWORK: local
+NETWORK: testnet
 
-APP_NAME: 'Survey Local App'
+APP_NAME: 'Survey Development App'
 APP_DOMAIN: 'localhost'
 APP_STORE: 'store.beta.mobius.network'
 APP_KEY: '<Stellar Secret Key for the DApp>'

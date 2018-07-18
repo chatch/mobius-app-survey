@@ -1,0 +1,26 @@
+{
+  "name": "survey-rewards-client",
+  "description": "Survey Rewards Client",
+  "type": "static",
+  "profile": "survey-up",
+  "regions": ["us-east-1"],
+  "hooks": {
+    "build": "npm run build",
+    "clean": "rm -rf build"
+  },
+  "lambda": { "memory": 128 },
+  "static": {
+    "dir": "build"
+  },
+  "error_pages": {
+    "disable": true
+  },
+  "stages": {
+    "testnet": {
+      "domain": "testnet.surveyrewards.network"
+    },
+    "public": {
+      "domain": "public.surveyrewards.network"
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { Router } from 'preact-router'
 import Header from './header'
 import Footer from './footer'
 import AuthTokenHandler from './auth-token-handler'
+import { default as Error, UNKNOWN_ROUTE } from './error'
 
 import About from '../routes/about'
 import Home from '../routes/home'
@@ -25,6 +26,7 @@ export default class App extends Component {
               <Profile path="/profile/:user" />
               <SurveyView path="/view" />
               <SurveyEditor path="/edit" />
+              <Error error={UNKNOWN_ROUTE} default />
             </Router>
           </div>
           <Footer />

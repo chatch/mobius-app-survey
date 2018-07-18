@@ -1,31 +1,30 @@
 service: 
-  name: survey-rewards-app
+  name: survey-rewards-backend
   
   # TODO: add a KMS key and ensure the secret app key is encrypted:
   #  awsKmsKeyArn: arn:aws:kms:us-east-1:XXXXXX:key/some-hash
 
 custom:
+  stage: ${opt:stage, self:provider.stage}
+  config: ${file(../config/${self:custom.stage}.yml)}
   dynamodb:
     start:
         migrate: true
-  stage: ${opt:stage, self:provider.stage}
-  config: ${file(../config/${self:custom.stage}.yml)}
-#   customDomain:
-#     domainName: api.surveyrewards.network
-#     basePath: ''
-#     stage: ${self:provider.stage}
-#     createRoute53Record: true
-  
+  customDomain:
+    domainName: api-${self:custom.stage}.surveyrewards.network
+    basePath: ''
+    stage: ${self:custom.stage}
+    createRoute53Record: true
     
 plugins:
-  # - serverless-domain-manager
-  - serverless-dynamodb-local
+  - serverless-domain-manager
+  - serverless-dynamodb-dev
   - serverless-offline # must be last
 
 provider:
   name: aws
-  stage: local
-  profile: survey-serverless
+  stage: dev
+  profile: survey
   runtime: nodejs8.10
   region: us-east-1
   memorySize: 128

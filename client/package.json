@@ -1,12 +1,15 @@
 {
   "name": "survey-rewards-mobius-client",
   "version": "0.0.2",
+  "description": "Survey Rewards App Client",
   "license": "MIT",
+  "repository": "chatch/mobius-app-survey",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
     "build": "preact build --no-prerender",
     "serve": "npm run build && preact serve",
     "dev": "preact watch",
+    "deploy": "up",
     "lint": "eslint src"
   },
   "eslintConfig": {
@@ -38,6 +41,7 @@
     "preact-cli": "^2.0.0"
   },
   "dependencies": {
+    "node-fetch": "^2.1.2",
     "preact": "^8.2.1",
     "preact-compat": "^3.17.0",
     "preact-material-components": "^1.4.3",

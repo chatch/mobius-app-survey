@@ -1,11 +1,13 @@
 {
   "name": "survey-rewards-mobius-server",
   "version": "0.0.2",
+  "description": "Survey Rewards App Backend",
   "license": "MIT",
   "main": "build/index.js",
+  "repository": "chatch/mobius-app-survey",
   "scripts": {
     "build": "tsc",
-    "deploy": "npm run build && serverless deploy",
+    "deploy": "npm run build && sls deploy",
     "test": "IS_OFFLINE=true jest src",
     "test-watch": "IS_OFFLINE=true jest src --watch",
     "start": "npm run build && sls offline start -s local --noAuth",

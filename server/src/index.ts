@@ -13,10 +13,9 @@ const app = express()
 app.use('/auth', authRouter)
 app.use('/', mobiusRouter)
 app.use('/', surveyRouter)
-app.use(express.static('../client/build'))
 
 // app.use(ErrorHandler)
 
 const serverlessApp = serverless(app)
 
-export { serverlessApp as app }
+export {serverlessApp as app}

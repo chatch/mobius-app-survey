@@ -1,3 +1,4 @@
+import Error, { UNAUTHORIZED } from './error'
 import storage from '../storage'
 
 const getUrlVars = () => {
@@ -19,6 +20,8 @@ const stripOutToken = url => url.replace(/token=[^=&]*/, '')
 /**
  * Check for the JWT token assigned by the Mobius Dapp Store auth flow
  * (auth flow gets a token from our /auth endpoint)
+ *
+ * @return {boolean} Have valid auth token
  */
 const checkToken = () => {
   // check if it's on the URI - should happen only when the DApp store directs
@@ -26,24 +29,18 @@ const checkToken = () => {
   const jwtToken = getUrlVars().token
   if (jwtToken) {
     storage.storeToken(jwtToken)
-    // strip token from the URL so it doesn't get copied around etc.
+    // strip token from the URL bar so it doesn't get copied around etc.
     window.location.replace(stripOutToken(window.location.href))
+    return true
   }
-  else {
-    // check if token is in localstorage from a previous page load
-    const lsToken = storage.getToken()
-    // no token - show the 401
-    if (!lsToken || lsToken.length <= 0) {
-      // TODOchange this to a router route ...
-      window.location.href = '/401.html'
-      return
-    }
-  }
+
+  // check if token is in localstorage from a previous page load
+  const lsToken = storage.getToken()
+
+  return lsToken && lsToken.length > 0 // TODO: better token check
 }
 
-const AuthTokenHandler = ({ children }) => {
-  checkToken()
-  return <div>{children}</div>
-}
+const AuthTokenHandler = ({ children }) =>
+  checkToken() ? <div>{children}</div> : <Error error={UNAUTHORIZED} />
 
 export default AuthTokenHandler
