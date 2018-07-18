@@ -10,7 +10,7 @@
     "deploy": "npm run build && sls deploy",
     "test": "IS_OFFLINE=true jest src",
     "test-watch": "IS_OFFLINE=true jest src --watch",
-    "start": "npm run build && sls offline start -s local --noAuth",
+    "start": "npm run build && sls offline start",
     "offline-setup": "sls dynamodb install"
   },
   "dependencies": {

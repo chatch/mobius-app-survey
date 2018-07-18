@@ -4,10 +4,11 @@
 # COPY me to testnet.yml and set APP_KEY
 #
 
-NETWORK: 'testnet'
+STELLAR_NETWORK: 'testnet'
 
-APP_NAME: 'Survey Rewards Testnet'
-APP_DOMAIN: 'testnet.surveyrewards.network'
+API_URL: 'https://api-testnet.surveyrewards.network'
+CLIENT_URL: 'https://testnet.surveyrewards.network'
+
 APP_STORE: 'store.beta.mobius.network'
 APP_KEY: '<Stellar Secret Key for the DApp>'
 

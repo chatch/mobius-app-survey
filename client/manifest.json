@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "Survey Rewards",
+  "short_name": "Survey Rewards",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

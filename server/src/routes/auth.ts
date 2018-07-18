@@ -2,23 +2,17 @@ const express = require('express')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const Mobius = require('@mobius-network/mobius-client-js')
-import {setNetwork} from '../middleware'
+import {stellarNetwork} from '../middleware'
 
 require('dotenv').config()
 
-const {APP_DOMAIN, APP_KEY, APP_STORE} = process.env
-
-const corsOptions = (req, callback) => {
-  callback(null, {
-    origin: req.pubnet ? APP_STORE : true,
-  })
-}
+const {APP_KEY, APP_STORE, API_URL} = process.env
 
 const router = express.Router()
 
-router.use(cors(corsOptions))
+router.use(cors({origin: APP_STORE}))
 router.use(express.json())
-router.use(setNetwork)
+router.use(stellarNetwork)
 
 router.get('/', (req, res) => {
   res.send(Mobius.Auth.Challenge.call(APP_KEY))
@@ -36,7 +30,7 @@ router.post('/', (req, res) => {
     const payload = {
       sub: token._address,
       jti: token.hash('hex').toString(),
-      iss: 'https://' + APP_DOMAIN + '/',
+      iss: API_URL,
       iat: parseInt(token.timeBounds.minTime, 10),
       exp: parseInt(token.timeBounds.maxTime, 10),
     }

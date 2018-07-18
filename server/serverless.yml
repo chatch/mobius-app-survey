@@ -18,7 +18,7 @@ custom:
     
 plugins:
   - serverless-domain-manager
-  - serverless-dynamodb-dev
+  - serverless-dynamodb-local
   - serverless-offline # must be last
 
 provider:
@@ -32,9 +32,9 @@ provider:
 
   environment:
     STAGE: ${self:custom.stage}
-    NETWORK: ${self:custom.config.NETWORK}
-    APP_NAME: ${self:custom.config.APP_NAME}
-    APP_DOMAIN: ${self:custom.config.APP_DOMAIN}
+    STELLAR_NETWORK: ${self:custom.config.STELLAR_NETWORK}
+    API_URL: ${self:custom.config.API_URL}
+    CLIENT_URL: ${self:custom.config.CLIENT_URL}
     APP_STORE: ${self:custom.config.APP_STORE}
     APP_KEY: ${self:custom.config.APP_KEY} # TODO: ensure this is encrypted - set a KMS key
     FEE_NEW_SURVEY: ${self:custom.config.FEE_NEW_SURVEY}

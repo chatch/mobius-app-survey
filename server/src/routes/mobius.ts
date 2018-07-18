@@ -2,11 +2,11 @@ import express from 'express'
 import cors from 'cors'
 import {AppBuilder as MobiusAppBuilder} from '@mobius-network/mobius-client-js'
 
-import {authorize, corsOptions, setNetwork} from '../middleware'
+import {authorize, stellarNetwork} from '../middleware'
 
 require('dotenv').config()
 
-const {APP_KEY} = process.env
+const {APP_KEY, CLIENT_URL} = process.env
 
 declare namespace Express {
   export interface Request {
@@ -16,10 +16,9 @@ declare namespace Express {
 
 const router = express.Router()
 
-router.use(cors(corsOptions))
+router.use(cors({origin: CLIENT_URL}))
 router.use(express.json())
-router.use(express.urlencoded({extended: true}))
-router.use(setNetwork)
+router.use(stellarNetwork)
 
 /**
  * Test route - logs and returns user record

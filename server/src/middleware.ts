@@ -1,10 +1,10 @@
 import expressJwt from 'express-jwt'
 import StellarSdk from 'stellar-sdk'
-import { Client as MobiusClient } from '@mobius-network/mobius-client-js'
+import {Client as MobiusClient} from '@mobius-network/mobius-client-js'
 
 require('dotenv').config()
 
-const { APP_DOMAIN, APP_KEY } = process.env
+const {API_URL, APP_KEY} = process.env
 
 const mobius = new MobiusClient()
 
@@ -18,9 +18,6 @@ const getToken = req => {
   ) {
     return req.headers.authorization.split(' ')[1]
   }
-  else if (req.query && req.query.token) {
-    return req.query.token
-  }
   return null
 }
 
@@ -30,24 +27,18 @@ const getToken = req => {
 const authorize = (req, res, next) => {
   expressJwt({
     secret: APP_KEY,
-    issuer: `https://${APP_DOMAIN}/`,
+    issuer: API_URL,
     algorithms: ['HS256'],
-    getToken
+    getToken,
   })(req, res, next)
 }
 
-const corsOptions = (req, callback) => {
-  callback(null, {
-    origin: req.pubnet ? APP_DOMAIN : true
-  })
-}
-
-const setNetwork = (req, res, next) => {
+const stellarNetwork = (req, res, next) => {
   mobius.network =
-    process.env.NETWORK === 'public'
+    process.env.STELLAR_NETWORK === 'public'
       ? StellarSdk.Networks.PUBLIC
       : StellarSdk.Networks.TESTNET
   next()
 }
 
-export { authorize, corsOptions, setNetwork }
+export {authorize, stellarNetwork}

@@ -3,11 +3,11 @@ import cors from 'cors'
 import {AppBuilder as MobiusAppBuilder} from '@mobius-network/mobius-client-js'
 
 import DBAPI from '../db/db-api'
-import {authorize, corsOptions, setNetwork} from '../middleware'
+import {authorize, stellarNetwork} from '../middleware'
 
 require('dotenv').config()
 
-const {APP_KEY} = process.env
+const {APP_KEY, CLIENT_URL} = process.env
 
 const FEE_NEW_SURVEY = Number(process.env.FEE_NEW_SURVEY)
 const REWARD_COMPLETE_SURVEY = Number(process.env.REWARD_COMPLETE_SURVEY)
@@ -17,12 +17,12 @@ const db = new DBAPI({
   stage: process.env.STAGE, // set by serverless (see in serverless.yml)
 })
 
+const corsAllow = cors({origin: CLIENT_URL})
 const router = express.Router()
 
-router.use(cors(corsOptions))
+router.use(corsAllow)
 router.use(express.json())
-router.use(express.urlencoded({extended: true}))
-router.use(setNetwork)
+router.use(stellarNetwork)
 
 /**
  * Protected Survey Routes
@@ -74,6 +74,7 @@ router.post(
   }
 )
 
+router.options('/delete', corsAllow)
 router.delete(
   '/delete',
   authorize,
@@ -84,6 +85,7 @@ router.delete(
   }
 )
 
+router.options('/changeName', corsAllow)
 router.put(
   '/changeName',
   authorize,
@@ -94,6 +96,7 @@ router.put(
   }
 )
 
+router.options('/changeJson', corsAllow)
 router.put(
   '/changeJson',
   authorize,

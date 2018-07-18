@@ -4,10 +4,11 @@
 # COPY me to public.yml and set APP_KEY
 #
 
-NETWORK: 'public'
+STELLAR_NETWORK: 'public'
 
-APP_NAME: 'Survey Rewards'
-APP_DOMAIN: 'surveyrewards.network'
+API_URL: 'https://api-public.surveyrewards.network'
+CLIENT_URL: 'https://surveyrewards.network'
+
 APP_STORE: 'store.mobius.network'
 APP_KEY: '<Stellar Secret Key for the DApp>'
 
