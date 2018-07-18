@@ -42,7 +42,7 @@ export default class Footer extends Component {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Deconet
+                Github
               </a>
             </LayoutGrid.Cell>
           </LayoutGrid.Inner>
