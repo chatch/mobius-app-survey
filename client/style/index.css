@@ -50,15 +50,7 @@ body {
   box-sizing: border-box;
 }
 
-#app {
-  height: 100%;
-}
-
-.mdc-theme--dark {
-  background-color: #333;
-  color: #fff;
-}
-
-.mdc-theme--dark .mdc-card {
-  color: #444;
+/* overriding default which is too small (not sure why?) */
+#new-survey-dialog .mdc-text-field__input {
+  height: 48px !important;
 }

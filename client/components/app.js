@@ -9,6 +9,7 @@ import { default as Error, UNKNOWN_ROUTE } from './error'
 import About from '../routes/about'
 import Home from '../routes/home'
 import Profile from '../routes/profile'
+import Results from '../routes/results'
 import SurveyView from '../routes/view'
 import SurveyEditor from '../routes/edit'
 
@@ -24,8 +25,9 @@ export default class App extends Component {
               <About path="/about" />
               <Profile path="/profile/" user="me" />
               <Profile path="/profile/:user" />
-              <SurveyView path="/view" />
-              <SurveyEditor path="/edit" />
+              <Results path="/results/:surveyId" />
+              <SurveyView path="/view/:surveyId" />
+              <SurveyEditor path="/edit/:surveyId" />
               <Error error={UNKNOWN_ROUTE} default />
             </Router>
           </div>

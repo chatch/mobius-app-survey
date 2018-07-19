@@ -21,17 +21,42 @@ const httpHeaders = () => ({
   Authorization: `Bearer ${storage.getToken()}`
 })
 
-const fetchAuthorized = (method, path) =>
-  fetch(`${API_URL}/${path}`, { headers: httpHeaders(), method }).then(res =>
-    res.json()
-  )
+const fetchAuthorized = (method, path, options = {}) =>
+  fetch(
+    `${API_URL}/${path}`,
+    Object.assign(options, { headers: httpHeaders(), method })
+  ).then(res => res.json())
 
 const get = path => fetchAuthorized('GET', path)
-const post = path => fetchAuthorized('POST', path)
+const post = (path, body) =>
+  fetchAuthorized('POST', path, { body: JSON.stringify(body) })
 
 class API {
   balance() {
-    return get('balance').then(result => result.balance)
+    return get('mobius/balance').then(result => result.balance)
+  }
+  surveys() {
+    return get('survey')
+  }
+  survey(id) {
+    return get(`survey/${id}`)
+  }
+  createSurvey(survey) {
+    return post('survey', survey)
+  }
+  updateSurvey(survey) {
+    return fetchAuthorized('PUT', `survey`, {
+      body: JSON.stringify(survey)
+    })
+  }
+  deleteSurvey(id) {
+    return fetchAuthorized('DELETE', `survey/${id}`)
+  }
+  createResult(result) {
+    return post('survey/results', result)
+  }
+  results(surveyId) {
+    return get(`survey/results/${surveyId}`)
   }
 }
 

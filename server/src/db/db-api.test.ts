@@ -1,6 +1,8 @@
 import DynamoDB from 'aws-sdk/clients/dynamodb'
 import DBAPI from './db-api'
 
+const STAGE = 'dev'
+
 /*
  * Test records
  */
@@ -43,8 +45,8 @@ const deleteAllItems = () => {
   })
 
   return Promise.all([
-    deleteAllInTable(dynamoDB, 'local_surveys'),
-    deleteAllInTable(dynamoDB, 'local_results'),
+    deleteAllInTable(dynamoDB, `${STAGE}_surveys`),
+    deleteAllInTable(dynamoDB, `${STAGE}_results`),
   ])
 }
 
@@ -55,7 +57,7 @@ const deleteAllItems = () => {
 beforeEach(deleteAllItems)
 afterEach(deleteAllItems)
 
-const db = new DBAPI({isOffline: true, stage: 'local'})
+const db = new DBAPI({isOffline: true, stage: STAGE})
 
 test('survey routines', async () => {
   // addSurvey
@@ -72,9 +74,9 @@ test('survey routines', async () => {
   expect(surveys.length).toEqual(1)
   expect(surveys[0]).toEqual(survey)
 
-  // changeName
+  // update name
   const newName = 'new name'
-  await db.changeName(survey.id, newName)
+  await db.updateSurvey({id: survey.id, name: newName})
   const surveyFreshGet = await db.getSurvey(survey.id)
   expect(surveyFreshGet.name).toEqual(newName)
 

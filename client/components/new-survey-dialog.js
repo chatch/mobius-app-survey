@@ -1,11 +1,12 @@
 import { h, Component } from 'preact'
-
 import Button from 'preact-material-components/Button'
 import Dialog from 'preact-material-components/Dialog'
 import TextField from 'preact-material-components/TextField'
 import 'preact-material-components/Button/style.css'
 import 'preact-material-components/Dialog/style.css'
 import 'preact-material-components/TextField/style.css'
+
+import api from '../api'
 
 const DEFAULT_COMPLETIONS = 50
 const DEFAULT_FEE_PER_COMPLETION = 1
@@ -30,8 +31,15 @@ export default class NewSurveyDialog extends Component {
   }
 
   onAccept() {
-    console.log(`vcan`)
-    // createSurvey('NewSurvey' + Date.now(), loadSurveys)
+    api
+      .createSurvey({
+        name: `NewSurvey-${Date.now()}`,
+        completions: this.state.completions
+      })
+      .then(() => {
+        // ugly hard reload the list...
+        window.location.href = '/'
+      })
   }
 
   onClickAdd() {
@@ -67,7 +75,7 @@ export default class NewSurveyDialog extends Component {
 
   render() {
     return (
-      <div>
+      <div id="new-survey-dialog">
         <Dialog
           ref={dialog => {
             this.dialog = dialog
@@ -81,6 +89,7 @@ export default class NewSurveyDialog extends Component {
                 name="completions"
                 helperText="How many people do you want to complete this survey?"
                 label="Completions"
+                height={50}
                 value={this.state.completions}
                 onKeyup={this.onInputChange}
               />

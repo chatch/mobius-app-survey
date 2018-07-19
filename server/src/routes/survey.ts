@@ -29,15 +29,14 @@ router.use(stellarNetwork)
  */
 
 // New Survey
-router.get(
-  '/create',
+router.post(
+  '/',
   authorize,
   (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userId = req.user.sub
-    const name = req.query.name
-    const completions = Number(req.query.completions)
+    const name = req.body.name
+    const completions = Number(req.body.completions)
     const json = '{}'
-
     if (Number.isInteger(completions) === false || completions < 1) {
       throw new Error(`completions must be a positive integer`)
     }
@@ -46,64 +45,52 @@ router.get(
       const dapp = await MobiusAppBuilder.build(APP_KEY, userId)
       const totalFee = FEE_NEW_SURVEY + completions * REWARD_COMPLETE_SURVEY
       console.log(`totalFee: ${totalFee}`)
-      const response = await dapp.charge(totalFee)
-      res.json({
-        Name: result.name,
-        Id: result.name,
-      })
+      try {
+        await dapp.charge(totalFee)
+      } catch (err) {
+        console.error('charge failed:')
+        console.error(err)
+        throw err
+      }
+      res.json(result)
     })
   }
 )
 
-// Survey Result - one user is posting answers
-router.post(
-  '/post',
-  authorize,
-  (req: express.Request, res: express.Response) => {
-    const surveyId = req.body.surveyId
-    const surveyResult = req.body.surveyResult
-    const userId = req.user.sub
-    db.postResult({surveyId, userId, json: surveyResult}).then(async result => {
-      // TODO: check result?
-      const dapp = await MobiusAppBuilder.build(APP_KEY, userId)
-      // payout from DApp balance which collected reward amounts when the survey was created
-      const tx = await dapp.payout(REWARD_COMPLETE_SURVEY, userId)
-      console.log(`payed ${userId} complete survey fee. rsp: ${tx.hash}`)
-      res.json({})
-    })
-  }
-)
+router.options('/', corsAllow)
+router.put('/', authorize, (req: express.Request, res: express.Response) => {
+  db.updateSurvey(req.body).then(result => res.json(result))
+})
 
-router.options('/delete', corsAllow)
+router.options('/:surveyId', corsAllow)
 router.delete(
-  '/delete',
+  '/:surveyId',
   authorize,
   (req: express.Request, res: express.Response) => {
-    const surveyId = req.query.id
+    const surveyId = req.params.surveyId
     console.log(`Delete ${surveyId}`)
     db.deleteSurvey(surveyId).then(result => res.json({}))
   }
 )
 
-router.options('/changeName', corsAllow)
-router.put(
-  '/changeName',
+// Survey Result - one user is posting answers
+router.post(
+  '/results',
   authorize,
   (req: express.Request, res: express.Response) => {
-    const id = req.body.id
-    const name = req.body.name
-    db.changeName(id, name).then(result => res.json(result))
-  }
-)
-
-router.options('/changeJson', corsAllow)
-router.put(
-  '/changeJson',
-  authorize,
-  (req: express.Request, res: express.Response) => {
-    const id = req.body.Id
-    const json = req.body.Json
-    db.storeSurvey(id, json).then(result => res.json(result.json))
+    const surveyId = req.body.surveyId
+    const surveyResult = req.body.surveyResult
+    const userId = req.user.sub
+    db.postResult({surveyId, userId, json: JSON.stringify(surveyResult)}).then(
+      async result => {
+        // TODO: check result?
+        const dapp = await MobiusAppBuilder.build(APP_KEY, userId)
+        // payout from DApp balance which collected reward amounts when the survey was created
+        const tx = await dapp.payout(REWARD_COMPLETE_SURVEY, userId)
+        console.log(`payed ${userId} complete survey fee. rsp: ${tx.hash}`)
+        res.json({})
+      }
+    )
   }
 )
 
@@ -111,18 +98,21 @@ router.put(
  * Public Survey Routes
  */
 
-router.get('/getActive', (req: express.Request, res: express.Response) => {
+router.get('/', (req: express.Request, res: express.Response) => {
   db.getSurveys().then(result => res.json(result))
 })
 
-router.get('/getSurvey', (req: express.Request, res: express.Response) => {
-  const surveyId = req.query.surveyId
+router.get('/:surveyId', (req: express.Request, res: express.Response) => {
+  const surveyId = req.params.surveyId
   db.getSurvey(surveyId).then(result => res.json(result))
 })
 
-router.get('/results', (req: express.Request, res: express.Response) => {
-  const surveyId = req.query.surveyId
-  db.getResults(surveyId).then(result => res.json(result))
-})
+router.get(
+  '/results/:surveyId',
+  (req: express.Request, res: express.Response) => {
+    const surveyId = req.params.surveyId
+    db.getResults(surveyId).then(result => res.json(result))
+  }
+)
 
 export default router

@@ -11,8 +11,8 @@ const app = express()
 
 // app.use(express.json()); //{strict: false}
 app.use('/auth', authRouter)
-app.use('/', mobiusRouter)
-app.use('/', surveyRouter)
+app.use('/mobius', mobiusRouter)
+app.use('/survey', surveyRouter)
 
 // app.use(ErrorHandler)
 

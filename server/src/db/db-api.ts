@@ -30,7 +30,7 @@ class DBAPI {
 
   constructor({
     isOffline = true,
-    stage = 'local',
+    stage = 'dev',
   }: {
     isOffline: boolean
     stage: string
@@ -64,13 +64,8 @@ class DBAPI {
     )
   }
 
-  changeName(id: string, name: string) {
-    console.log('change name: ' + name + ' id: ' + id)
-    return this.mapper.update(Object.assign(new Survey(), {id, name}))
-  }
-
-  storeSurvey(id: string, json: string) {
-    return this.mapper.update(Object.assign(new Survey(), {id, json}))
+  updateSurvey(survey: {id: string; name: string; json: string}) {
+    return this.mapper.update(Object.assign(new Survey(), survey))
   }
 
   async getSurveys() {

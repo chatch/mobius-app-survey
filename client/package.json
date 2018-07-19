@@ -23,6 +23,7 @@
         "error",
         2
       ],
+      "react/jsx-no-bind": "warn",
       "react/jsx-indent-props": [
         2,
         2
@@ -46,6 +47,7 @@
     "preact-compat": "^3.17.0",
     "preact-material-components": "^1.4.3",
     "preact-router": "^2.5.5",
+    "react-table": "^6.8.6",
     "survey-react": "^1.0.32",
     "surveyjs-editor": "^1.0.32"
   }
