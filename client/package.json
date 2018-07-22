@@ -47,6 +47,8 @@
     "preact-compat": "^3.17.0",
     "preact-material-components": "^1.4.3",
     "preact-router": "^2.5.5",
+    "react-md-spinner": "^0.3.0",
+    "react-responsive-modal": "^3.2.0",
     "react-table": "^6.8.6",
     "survey-react": "^1.0.32",
     "surveyjs-editor": "^1.0.32"

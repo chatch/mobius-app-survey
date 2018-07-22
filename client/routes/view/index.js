@@ -7,15 +7,20 @@ import api from '../../api'
 class SurveyView extends Component {
   state = { survey: {} }
 
+  constructor() {
+    super()
+    this.onComplete = this.onComplete.bind(this)
+  }
+
   componentDidMount() {
     api.survey(this.props.surveyId).then(survey => {
       this.setState({ survey })
     })
   }
 
-  onComplete(surveyId, result) {
+  onComplete({ data: result }) {
     api
-      .createResult({ surveyId, surveyResult: result })
+      .createResult({ surveyId: this.props.surveyId, surveyResult: result })
       .then(() => console.log('saved result'))
   }
 
@@ -33,12 +38,10 @@ class SurveyView extends Component {
 
     return (
       <div className="SurveyView">
-        <h1>SurveyJS library in action:</h1>
+        <h1>{this.state.survey.name}</h1>
         <Survey
           model={model}
-          onComplete={({ data: result }) =>
-            this.onComplete(this.props.surveyId, result)
-          }
+          onComplete={this.onComplete}
           onValueChanged={this.onValueChanged}
         />
       </div>

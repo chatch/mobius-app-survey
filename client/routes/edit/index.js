@@ -6,6 +6,7 @@ import {
 import 'surveyjs-editor/surveyeditor.css'
 
 import api from '../../api'
+import Spinner from '../../components/spinner'
 
 const EDITOR_OPTIONS = {
   // TODO: add more question types for richer surveys
@@ -15,14 +16,8 @@ const EDITOR_THEME = 'darkblue'
 
 class SurveyEditor extends Component {
   state = {
+    loading: true,
     survey: {}
-  }
-
-  handleSave = () => {
-    const survey = Object.assign({}, this.state.survey, {
-      json: this.editor.text
-    })
-    api.updateSurvey(survey).then(() => console.log(`SAVED`))
   }
 
   componentDidMount() {
@@ -31,12 +26,25 @@ class SurveyEditor extends Component {
     this.editor.saveSurveyFunc = this.handleSave
     api.survey(this.props.surveyId).then(survey => {
       this.editor.text = survey.json
-      this.setState({ survey })
+      this.setState({ survey, loading: false })
     })
   }
 
+  handleSave = () => {
+    this.setState({ loading: true })
+    const survey = Object.assign({}, this.state.survey, {
+      json: this.editor.text
+    })
+    api.updateSurvey(survey).then(() => this.setState({ loading: false }))
+  }
+
   render() {
-    return <div id="surveyEditorContainer" />
+    return (
+      <div id="survey-edit">
+        {this.state.loading === true && <Spinner />}
+        <div id="surveyEditorContainer" />
+      </div>
+    )
   }
 }
 

@@ -6,9 +6,10 @@ import 'preact-material-components/Button/style.css'
 import 'preact-material-components/Dialog/style.css'
 import 'preact-material-components/TextField/style.css'
 
+import Spinner from './spinner'
 import api from '../api'
 
-const DEFAULT_COMPLETIONS = 50
+const DEFAULT_COMPLETIONS = 1 // 50
 const DEFAULT_FEE_PER_COMPLETION = 1
 
 const BASE_FEE = 10
@@ -20,17 +21,19 @@ export default class NewSurveyDialog extends Component {
     totalFee: this.calculateTotalFee(
       DEFAULT_COMPLETIONS,
       DEFAULT_FEE_PER_COMPLETION
-    )
+    ),
+    createInProgress: false
   }
 
   constructor() {
     super()
-    this.onAccept = this.onAccept.bind(this)
+    this.onClickCreate = this.onClickCreate.bind(this)
     this.onClickAdd = this.onClickAdd.bind(this)
     this.onInputChange = this.onInputChange.bind(this)
   }
 
-  onAccept() {
+  onClickCreate() {
+    this.setState({ createInProgress: true })
     api
       .createSurvey({
         name: `NewSurvey-${Date.now()}`,
@@ -40,6 +43,7 @@ export default class NewSurveyDialog extends Component {
         // ugly hard reload the list...
         window.location.href = '/'
       })
+    return false
   }
 
   onClickAdd() {
@@ -80,7 +84,6 @@ export default class NewSurveyDialog extends Component {
           ref={dialog => {
             this.dialog = dialog
           }}
-          onAccept={this.onAccept}
         >
           <Dialog.Header>Add New Survey</Dialog.Header>
           <Dialog.Body>
@@ -108,8 +111,11 @@ export default class NewSurveyDialog extends Component {
           </Dialog.Body>
           <Dialog.Footer>
             <Dialog.FooterButton cancel>Cancel</Dialog.FooterButton>
-            <Dialog.FooterButton accept>Create</Dialog.FooterButton>
+            <Dialog.FooterButton onClick={this.onClickCreate}>
+              Create
+            </Dialog.FooterButton>
           </Dialog.Footer>
+          {this.state.createInProgress === true && <Spinner />}
         </Dialog>
         <Button raised ripple onClick={this.onClickAdd}>
           Add
