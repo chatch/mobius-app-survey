@@ -6,13 +6,13 @@ const Error = ({ error, extra }) => {
 
   if (!extraEl) {
     if (error === UNAUTHORIZED) {
+      const storeUrl = `https://store.${
+        window.location.host.startsWith('testnet') ? 'beta.' : ''
+      }mobius.network`
       extraEl = (
         <div>
-          Login via the DApp store @
-          <a href="https://store.mobius.network">
-            https://store.mobius.network
-          </a>{' '}
-          to gain access to this Application.
+          Login via the DApp store @ <a href={storeUrl}>{storeUrl}</a> to gain
+          access to this Application.
         </div>
       )
     }
