@@ -47,7 +47,7 @@ router.get(
   ) => {
     try {
       const dapp = await MobiusAppBuilder.build(APP_KEY, req.user.sub)
-      res.json({balance: dapp.userBalance})
+      res.json({balance: dapp.userBalance, userId: req.user.sub})
     } catch (e) {
       next(e)
     }

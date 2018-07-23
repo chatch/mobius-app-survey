@@ -26,7 +26,6 @@ export default class Header extends Component {
           <Toolbar.Section align-end>
             <Tabs activeTabIndex={this.state.activeTabIndex}>
               <Tabs.Tab href="/">Surveys</Tabs.Tab>
-              <Tabs.Tab href="/profile">Profile</Tabs.Tab>
               <Tabs.Tab href="/about">About</Tabs.Tab>
             </Tabs>
             {this.state.userBalance !== null && (

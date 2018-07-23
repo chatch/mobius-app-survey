@@ -1,5 +1,9 @@
 import { h, Component } from 'preact'
-import { Survey, Model } from 'survey-react'
+import {
+  Survey,
+  Model,
+  StylesManager as SurveyJSStylesManager
+} from 'survey-react'
 import 'survey-react/survey.css'
 
 import api from '../../api'
@@ -13,6 +17,8 @@ class SurveyView extends Component {
   }
 
   componentDidMount() {
+    Survey.cssType = 'standard'
+    SurveyJSStylesManager.applyTheme('darkblue')
     api.survey(this.props.surveyId).then(survey => {
       this.setState({ survey })
     })
@@ -33,7 +39,6 @@ class SurveyView extends Component {
       return
     }
 
-    Survey.cssType = 'standard'
     const model = new Model(this.state.survey.json)
 
     return (

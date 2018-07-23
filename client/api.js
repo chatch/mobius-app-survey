@@ -33,7 +33,10 @@ const post = (path, body) =>
 
 class API {
   balance() {
-    return get('mobius/balance').then(result => result.balance)
+    return get('mobius/balance').then(({ balance, userId }) => {
+      storage.storeUser(userId)
+      return balance
+    })
   }
   surveys() {
     return get('survey')

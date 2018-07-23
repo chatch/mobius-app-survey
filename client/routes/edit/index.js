@@ -12,7 +12,7 @@ const EDITOR_OPTIONS = {
   // TODO: add more question types for richer surveys
   questionTypes: ['text', 'checkbox', 'radiogroup', 'dropdown']
 }
-const EDITOR_THEME = 'darkblue'
+const THEME = 'darkblue'
 
 class SurveyEditor extends Component {
   state = {
@@ -21,7 +21,7 @@ class SurveyEditor extends Component {
   }
 
   componentDidMount() {
-    SurveyJSStylesManager.applyTheme(EDITOR_THEME)
+    SurveyJSStylesManager.applyTheme(THEME)
     this.editor = new SurveyJSEditor('surveyEditorContainer', EDITOR_OPTIONS)
     this.editor.saveSurveyFunc = this.handleSave
     api.survey(this.props.surveyId).then(survey => {
@@ -41,6 +41,7 @@ class SurveyEditor extends Component {
   render() {
     return (
       <div id="survey-edit">
+        <h1>{this.state.survey.name}</h1>
         {this.state.loading === true && <Spinner />}
         <div id="surveyEditorContainer" />
       </div>

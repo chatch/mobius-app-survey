@@ -15,8 +15,8 @@ export default class About extends Component {
           MOBI per completed survey must be provisioned to reward participants.
           On survey create you can specify how many survey completions you would
           like to target. So for example if you want 100 users to complete your
-          survey then the cost of survey creation will be 100 MOBI (to be payed
-          to 100 users as reward) plus 10 MOBI base fee for a total of 110 MOBI.
+          survey then the cost of survey creation will be 100 MOBI plus 10 MOBI
+          base fee for a total of 110 MOBI.
         </p>
         <p>
           The 10 MOBI base fee is collected by the DApp and will be later

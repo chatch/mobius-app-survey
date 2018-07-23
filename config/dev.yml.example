@@ -17,3 +17,6 @@ FEE_NEW_SURVEY: '10'
 
 # pay survey completer from the survey creator account (MOBI)
 REWARD_COMPLETE_SURVEY: '1'
+
+# recaptcha
+RECAPTCHA_SITE_KEY: '6LfPvmUUAAAAAJpfmX0FzuAHbV3reprRes58p1wl'

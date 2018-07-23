@@ -3,8 +3,10 @@ import { route } from 'preact-router'
 
 import Button from 'preact-material-components/Button'
 import Dialog from 'preact-material-components/Dialog'
+import IconButton from 'preact-material-components/IconButton'
 import 'preact-material-components/Button/style.css'
 import 'preact-material-components/Dialog/style.css'
+import 'preact-material-components/IconButton/style.css'
 
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
@@ -12,6 +14,24 @@ import 'react-table/react-table.css'
 import NewSurveyDialog from '../../components/new-survey-dialog'
 import Spinner from '../../components/spinner'
 import api from '../../api'
+import storage from '../../storage'
+
+const steexpAddr =
+  window.location.host === 'surveyrewards.network'
+    ? 'https://steexp.com'
+    : 'https://testnet.steexp.com'
+
+const UserLink = ({ userId }) => (
+  <span title={userId}>
+    <a
+      href={`${steexpAddr}/account/${userId}`}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {userId.substring(0, 4)}
+    </a>
+  </span>
+)
 
 const SurveyTable = ({ loading, surveys, onClickDelete }) => {
   const runSurvey = el => route(`/view/${el.target.id}`)
@@ -19,42 +39,60 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
   const deleteSurvey = el => onClickDelete(el.target.id)
   const editSurvey = el => route(`/edit/${el.target.id}`)
 
+  const currentUser = storage.getUser()
+
+  const AdminUserIcon = (icon, onClickFn) => ({
+    original: { id, userId: owner }
+  }) =>
+    owner === currentUser && (
+      <IconButton id={id} onClick={onClickFn}>
+        {icon}
+      </IconButton>
+    )
+
+  const centerCellStyle = () => ({
+    style: {
+      textAlign: 'center'
+    }
+  })
+
   const columns = [
     {
       Header: 'Name',
       accessor: 'name'
     },
     {
+      Header: 'Owner',
+      Cell: ({ original: { userId } }) => <UserLink userId={userId} />,
+      getProps: centerCellStyle
+    },
+    {
       Header: 'Run',
       Cell: ({ original: { id } }) => (
-        <Button id={id} onClick={runSurvey}>
+        <Button id={id} ripple raised onClick={runSurvey}>
           Run
         </Button>
-      )
+      ),
+      getProps: centerCellStyle
     },
     {
       Header: 'Results',
       Cell: ({ original: { id } }) => (
-        <Button id={id} onClick={resultsSurvey}>
-          Results
-        </Button>
-      )
+        <IconButton id={id} onClick={resultsSurvey}>
+          table_chart
+        </IconButton>
+      ),
+      getProps: centerCellStyle
     },
     {
       Header: 'Edit',
-      Cell: ({ original: { id } }) => (
-        <Button id={id} onClick={editSurvey}>
-          Edit
-        </Button>
-      )
+      Cell: AdminUserIcon('edit', editSurvey),
+      getProps: centerCellStyle
     },
     {
       Header: 'Delete',
-      Cell: ({ original: { id } }) => (
-        <Button id={id} onClick={deleteSurvey}>
-          Delete
-        </Button>
-      )
+      Cell: AdminUserIcon('delete', deleteSurvey),
+      getProps: centerCellStyle
     }
   ]
 

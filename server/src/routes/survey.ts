@@ -20,6 +20,14 @@ const db = new DBAPI({
 const corsAllow = cors({origin: CLIENT_URL})
 const router = express.Router()
 
+const isOwner = (req, res, next) => {
+  const surveyId = req.body && req.body.id ? req.body.id : req.params.surveyId
+  db.getSurvey(surveyId).then(({userId: owner}) => {
+    if (owner !== req.user.sub) next(new Error('Unauthorized'))
+    next()
+  })
+}
+
 router.use(corsAllow)
 router.use(express.json())
 router.use(stellarNetwork)
@@ -58,14 +66,19 @@ router.post(
 )
 
 router.options('/', corsAllow)
-router.put('/', authorize, (req: express.Request, res: express.Response) => {
-  db.updateSurvey(req.body).then(result => res.json(result))
-})
+router.put(
+  '/',
+  authorize,
+  isOwner,
+  (req: express.Request, res: express.Response) =>
+    db.updateSurvey(req.body).then(result => res.json(result))
+)
 
 router.options('/:surveyId', corsAllow)
 router.delete(
   '/:surveyId',
   authorize,
+  isOwner,
   (req: express.Request, res: express.Response) => {
     const surveyId = req.params.surveyId
     console.log(`Delete ${surveyId}`)

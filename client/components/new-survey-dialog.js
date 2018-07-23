@@ -18,6 +18,7 @@ export default class NewSurveyDialog extends Component {
   state = {
     completions: DEFAULT_COMPLETIONS,
     feePerCompletion: DEFAULT_FEE_PER_COMPLETION,
+    name: '',
     totalFee: this.calculateTotalFee(
       DEFAULT_COMPLETIONS,
       DEFAULT_FEE_PER_COMPLETION
@@ -36,7 +37,7 @@ export default class NewSurveyDialog extends Component {
     this.setState({ createInProgress: true })
     api
       .createSurvey({
-        name: `NewSurvey-${Date.now()}`,
+        name: this.state.name,
         completions: this.state.completions
       })
       .then(() => {
@@ -51,24 +52,28 @@ export default class NewSurveyDialog extends Component {
   }
 
   onInputChange({ target }) {
-    const { name, value } = target
+    const { name: field, value } = target
 
-    let { completions, feePerCompletion } = this.state
+    let { completions, feePerCompletion, name } = this.state
 
-    if (name === 'completions') {
+    if (field === 'completions') {
       completions = value
     }
-    else if (name === 'feePerCompletion') {
+    else if (field === 'feePerCompletion') {
       feePerCompletion = value
     }
+    else if (field === 'surveyName') {
+      name = value
+    }
     else {
-      console.error(`what the hell is this?: ${target} ... terminating`)
+      console.error(`what the hell is this?: ${field}:${value} ... terminating`)
       return
     }
 
     this.setState({
       completions,
       feePerCompletion,
+      name,
       totalFee: this.calculateTotalFee(completions, feePerCompletion)
     })
   }
@@ -88,6 +93,13 @@ export default class NewSurveyDialog extends Component {
           <Dialog.Header>Add New Survey</Dialog.Header>
           <Dialog.Body>
             <form>
+              <TextField
+                name="surveyName"
+                label="Name"
+                height={50}
+                value={this.state.name}
+                onKeyup={this.onInputChange}
+              />
               <TextField
                 name="completions"
                 helperText="How many people do you want to complete this survey?"
