@@ -3,12 +3,15 @@ import cors from 'cors'
 import {AppBuilder as MobiusAppBuilder} from '@mobius-network/mobius-client-js'
 
 import DBAPI from '../db/db-api'
+import {
+  AlreadySubmittedError,
+  ForbiddenError,
+  UnauthorizedError,
+} from '../errors'
 import {authorize, stellarNetwork} from '../middleware'
 
 require('dotenv').config()
-
 const {APP_KEY, CLIENT_URL} = process.env
-
 const FEE_NEW_SURVEY = Number(process.env.FEE_NEW_SURVEY)
 const REWARD_COMPLETE_SURVEY = Number(process.env.REWARD_COMPLETE_SURVEY)
 
@@ -18,15 +21,17 @@ const db = new DBAPI({
 })
 
 const corsAllow = cors({origin: CLIENT_URL})
-const router = express.Router()
 
 const isOwner = (req, res, next) => {
   const surveyId = req.body && req.body.id ? req.body.id : req.params.surveyId
   db.getSurvey(surveyId).then(({userId: owner}) => {
-    if (owner !== req.user.sub) next(new Error('Unauthorized'))
+    if (owner !== req.user.sub)
+      next(new ForbiddenError('user does not own this survey'))
     next()
   })
 }
+
+const router = express.Router()
 
 router.use(corsAllow)
 router.use(express.json())
@@ -43,8 +48,9 @@ router.post(
   (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userId = req.user.sub
     const name = req.body.name
-    const completions = Number(req.body.completions)
     const json = '{}'
+
+    const completions = Number(req.body.completions)
     if (Number.isInteger(completions) === false || completions < 1) {
       throw new Error(`completions must be a positive integer`)
     }
@@ -90,20 +96,29 @@ router.delete(
 router.post(
   '/results',
   authorize,
-  (req: express.Request, res: express.Response) => {
-    const surveyId = req.body.surveyId
-    const surveyResult = req.body.surveyResult
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const {surveyId, surveyResult} = req.body
     const userId = req.user.sub
-    db.postResult({surveyId, userId, json: JSON.stringify(surveyResult)}).then(
-      async result => {
-        // TODO: check result?
-        const dapp = await MobiusAppBuilder.build(APP_KEY, userId)
-        // payout from DApp balance which collected reward amounts when the survey was created
-        const tx = await dapp.payout(REWARD_COMPLETE_SURVEY, userId)
-        console.log(`payed ${userId} complete survey fee. rsp: ${tx.hash}`)
-        res.json({})
-      }
-    )
+    // first check the user hasn't already submitted a result
+    db.getResults(surveyId)
+      .then(result => {
+        if (result.some(rec => rec.userId === userId))
+          next(
+            new AlreadySubmittedError('User has already completed this survey!')
+          )
+      })
+      .then(() =>
+        db
+          .postResult({surveyId, userId, json: JSON.stringify(surveyResult)})
+          .then(async result => {
+            // TODO: check result?
+            const dapp = await MobiusAppBuilder.build(APP_KEY, userId)
+            // payout from DApp balance which collected reward amounts when the survey was created
+            const tx = await dapp.payout(REWARD_COMPLETE_SURVEY, userId)
+            console.log(`payed ${userId} complete survey fee. tx: ${tx.hash}`)
+            res.json({})
+          })
+      )
   }
 )
 

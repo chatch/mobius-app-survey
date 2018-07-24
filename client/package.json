@@ -9,7 +9,8 @@
     "build": "preact build --no-prerender",
     "serve": "npm run build && preact serve",
     "dev": "preact watch",
-    "deploy": "up",
+    "deploy-testnet": "up testnet",
+    "deploy-public": "up public",
     "lint": "eslint src"
   },
   "eslintConfig": {

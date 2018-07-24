@@ -7,9 +7,14 @@ import {
 import 'survey-react/survey.css'
 
 import api from '../../api'
+import Error from '../../components/error'
+import Spinner from '../../components/spinner'
 
 class SurveyView extends Component {
-  state = { survey: {} }
+  state = {
+    loading: true,
+    survey: {}
+  }
 
   constructor() {
     super()
@@ -20,34 +25,44 @@ class SurveyView extends Component {
     Survey.cssType = 'standard'
     SurveyJSStylesManager.applyTheme('darkblue')
     api.survey(this.props.surveyId).then(survey => {
-      this.setState({ survey })
+      this.setState({ survey, loading: false })
     })
   }
 
-  onComplete({ data: result }) {
-    api
+  onComplete({ data: result }, { showDataSavingClear, showDataSavingError }) {
+    this.setState({ loading: true })
+    showDataSavingClear()
+    return api
       .createResult({ surveyId: this.props.surveyId, surveyResult: result })
-      .then(() => console.log('saved result'))
-  }
-
-  onValueChanged(result) {
-    console.log('value changed!')
+      .then(rsp => {
+        this.setState({ loading: false })
+        console.log(`createResult returned: rsp: ${JSON.stringify(rsp)}`)
+        if (rsp.error && rsp.error.message)
+          this.setState({ completionError: rsp.error.message })
+      })
   }
 
   render() {
-    if (!this.state.survey.json) {
-      return
-    }
+    if (!this.state.survey.json) return null
+
+    if (this.state.completionError)
+      return (
+        <Error
+          error="Survey Completion Error"
+          extra={this.state.completionError}
+        />
+      )
 
     const model = new Model(this.state.survey.json)
 
     return (
       <div className="SurveyView">
         <h1>{this.state.survey.name}</h1>
+        {this.state.loading === true && <Spinner />}
         <Survey
           model={model}
           onComplete={this.onComplete}
-          onValueChanged={this.onValueChanged}
+          showCompletedPage={false}
         />
       </div>
     )

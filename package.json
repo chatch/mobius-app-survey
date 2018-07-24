@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "cd client && npm run build && cd ../server && npm run build",
-    "deploy": "cd client && npm run deploy && cd ../server && npm run deploy"
+    "deploy-testnet": "cd client && npm run deploy-testnet && cd ../server && npm run deploy-testnet",
+    "deploy-public": "cd client && npm run deploy-public && cd ../server && npm run deploy-public"
   },
   "keywords": [
     "survey",
