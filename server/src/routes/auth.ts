@@ -10,7 +10,7 @@ const {APP_KEY, APP_STORE, API_URL} = process.env
 
 const router = express.Router()
 
-router.use(cors({origin: APP_STORE}))
+router.use(cors({origin: `https://${APP_STORE}`}))
 router.use(express.json())
 router.use(stellarNetwork)
 
