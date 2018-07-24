@@ -65,6 +65,8 @@ test('survey routines', async () => {
   expect(survey.name).toEqual(SURVEY.name)
   expect(survey.userId).toEqual(SURVEY.userId)
   expect(survey.json).toEqual(SURVEY.json)
+  expect(survey.completions).toEqual(SURVEY.completions)
+  expect(survey.completionsDone).toEqual(0)
 
   // getSurvey
   expect(await db.getSurvey(survey.id)).toEqual(survey)
@@ -96,6 +98,10 @@ test('result routines', async () => {
   expect(resultRsp.surveyId).toEqual(surveyId)
   expect(resultRsp.json).toEqual(result1.json)
   expect(resultRsp.userId).toEqual(result1.userId)
+
+  const surveyFreshGet = await db.getSurvey(surveyId)
+  expect(surveyFreshGet.completions).toEqual(SURVEY.completions)
+  expect(surveyFreshGet.completionsDone).toEqual(1)
 
   const results = await db.getResults(surveyId)
   expect(results.length).toEqual(1)

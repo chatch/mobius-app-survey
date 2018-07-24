@@ -60,7 +60,13 @@ class DBAPI {
     json: string
   }) {
     return this.mapper.put(
-      Object.assign(new Survey(), {name, userId, completions, json})
+      Object.assign(new Survey(), {
+        name,
+        userId,
+        completions,
+        completionsDone: 0,
+        json,
+      })
     )
   }
 
@@ -89,7 +95,7 @@ class DBAPI {
    * Result Table
    ************************************/
 
-  postResult({
+  async postResult({
     surveyId,
     userId,
     json,
@@ -98,9 +104,21 @@ class DBAPI {
     userId: string
     json: string
   }) {
-    return this.mapper.put(
-      Object.assign(new Result(), {surveyId, userId, json})
+    const result = await this.mapper.put(
+      Object.assign(new Result(), {
+        surveyId,
+        userId,
+        json,
+      })
     )
+
+    const survey = await this.mapper.get(
+      Object.assign(new Survey(), {id: surveyId})
+    )
+    survey.completionsDone++
+    await this.mapper.update(Object.assign(new Survey(), survey))
+
+    return result
   }
 
   async getResults(surveyId: string) {

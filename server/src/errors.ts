@@ -2,19 +2,17 @@
  * All service wide errors defined here.
  */
 
-// class ValidationError extends Error {
-//   fields: string[]
-//   constructor(message, fields: string[] = []) {
-//     super(message)
-//     this.name = 'ValidationError'
-//     this.fields = fields
-//   }
-// }
+class ValidationError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'ValidationError'
+  }
+}
 
-class AlreadySubmittedError extends Error {
+class ConflictError extends Error {
   constructor(message: string) {
     super(message)
-    this.name = 'AlreadySubmittedError'
+    this.name = 'ConflictError'
   }
 }
 
@@ -32,4 +30,4 @@ class UnauthorizedError extends Error {
   }
 }
 
-export {AlreadySubmittedError, ForbiddenError, UnauthorizedError}
+export {ConflictError, ForbiddenError, ValidationError, UnauthorizedError}

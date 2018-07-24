@@ -56,6 +56,9 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
     }
   })
 
+  const isActive = ({ completions, completionsDone }) =>
+    completionsDone < completions
+
   const columns = [
     {
       Header: 'Name',
@@ -68,10 +71,18 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
     },
     {
       Header: 'Run',
-      Cell: ({ original: { id } }) => (
-        <Button id={id} ripple raised onClick={runSurvey}>
-          Run
-        </Button>
+      Cell: ({ original }) =>
+        isActive(original) && (
+          <Button id={original.id} ripple raised onClick={runSurvey}>
+            Run
+          </Button>
+        ),
+      getProps: centerCellStyle
+    },
+    {
+      Header: 'Completions',
+      Cell: ({ original: { completions, completionsDone } }) => (
+        <span>{`${completionsDone} / ${completions}`}</span>
       ),
       getProps: centerCellStyle
     },

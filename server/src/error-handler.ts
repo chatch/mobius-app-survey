@@ -6,11 +6,6 @@ const errorHandler = (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  console.error(`type: ${typeof error}`)
-  console.error(`message: ${error.message}`)
-  console.error(`toString: ${error.toString()}`)
-  console.error(JSON.stringify(error, null, 2))
-
   let status
   let {message} = error
 
@@ -18,8 +13,10 @@ const errorHandler = (
     status = 401
   } else if (error.name === 'ForbiddenError') {
     status = 403
-  } else if (error.name === 'AlreadySubmittedError') {
+  } else if (error.name === 'ConflictError') {
     status = 409
+  } else if (error.name === 'ValidationError') {
+    status = 400
   } else {
     status = 500
     message = `Unknown Internal Error: ${error.message}`
