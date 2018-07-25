@@ -21,6 +21,12 @@ body {
   padding: 10px 30px;
 }
 
+.toolbar-title-link {
+  padding: 0;
+  text-decoration: none;
+  color: white;
+}
+
 /* fallback */
 @font-face {
   font-family: 'Material Icons';

@@ -29,8 +29,16 @@ export default class Header extends Component {
     return (
       <Toolbar className="toolbar">
         <Toolbar.Row>
-          <Toolbar.Section align-start>
-            <Toolbar.Title>Survey Rewards</Toolbar.Title>
+          <Toolbar.Section align-start style={{ paddingLeft: 30 }}>
+            <a href="/" className="toolbar-title-link">
+              <img
+                src="/assets/icons/logo-white.svg"
+                width={30}
+                height={30}
+                style={{ position: 'relative', top: 8 }}
+              />
+              <Toolbar.Title>Survey Rewards</Toolbar.Title>
+            </a>
           </Toolbar.Section>
           <Toolbar.Section align-end>
             <Tabs activeTabIndex={this.state.activeTabIndex}>
