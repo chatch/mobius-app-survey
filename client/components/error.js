@@ -1,11 +1,12 @@
 const UNAUTHORIZED = 'Unauthorized'
 const UNKNOWN_ROUTE = 'Unknown Route'
+const SESSION_TIMEOUT = 'Session Timeout'
 
 const Error = ({ error, extra }) => {
   let extraEl = extra
 
   if (!extraEl) {
-    if (error === UNAUTHORIZED) {
+    if (error === UNAUTHORIZED || error === SESSION_TIMEOUT) {
       const storeUrl = `https://store.${
         window.location.host.startsWith('testnet') ? 'beta.' : ''
       }mobius.network`
@@ -27,4 +28,4 @@ const Error = ({ error, extra }) => {
   )
 }
 
-export { Error as default, UNAUTHORIZED, UNKNOWN_ROUTE }
+export { Error as default, SESSION_TIMEOUT, UNAUTHORIZED, UNKNOWN_ROUTE }

@@ -1,10 +1,12 @@
 import { h, Component } from 'preact'
+import { route } from 'preact-router'
 import Tabs from 'preact-material-components/Tabs'
 import Toolbar from 'preact-material-components/Toolbar'
 import 'preact-material-components/Tabs/style.css'
 import 'preact-material-components/Toolbar/style.css'
 
 import api from '../../api'
+import { SESSION_TIMEOUT } from '../error'
 
 export default class Header extends Component {
   state = {
@@ -13,7 +15,14 @@ export default class Header extends Component {
   }
 
   componentDidMount() {
-    api.balance().then(balance => this.setState({ balance }))
+    api
+      .balance()
+      .then(balance => this.setState({ balance }))
+      .catch(err => {
+        console.error(`Get balance failed: ${err.toString() + err.message}`)
+        if (err.message === SESSION_TIMEOUT)
+          route(`/error/?error=${SESSION_TIMEOUT}`)
+      })
   }
 
   render() {

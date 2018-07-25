@@ -11,9 +11,9 @@ import 'preact-material-components/IconButton/style.css'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 
+import api from '../../api'
 import NewSurveyDialog from '../../components/new-survey-dialog'
 import Spinner from '../../components/spinner'
-import api from '../../api'
 import storage from '../../storage'
 
 const steexpAddr =

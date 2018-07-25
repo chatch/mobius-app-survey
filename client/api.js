@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import storage from './storage'
-
+import { SESSION_TIMEOUT } from './components/error'
 /**
  * This module provides a client to the backend API.
  */
@@ -33,7 +33,9 @@ const post = (path, body) =>
 
 class API {
   balance() {
-    return get('mobius/balance').then(({ balance, userId }) => {
+    return get('mobius/balance').then(rsp => {
+      if (rsp.error) return Promise.reject(new Error(SESSION_TIMEOUT))
+      const { balance, userId } = rsp
       storage.storeUser(userId)
       return balance
     })
