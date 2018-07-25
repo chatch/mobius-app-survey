@@ -1,18 +1,11 @@
 import { h, Component } from 'preact'
 import ReactTable from 'react-table'
-import { Survey, Model } from 'survey-react'
+import { Model } from 'survey-react'
 import 'react-table/react-table.css'
 
 import api from '../../api'
 
 const ResultTable = ({ loading, results, columns }) => (
-  // const columns = [
-  //   {
-  //     Header: 'Name',
-  //     accessor: 'name'
-  //   },
-  // ]
-
   <ReactTable
     data={results}
     columns={columns}
@@ -28,54 +21,44 @@ export default class Home extends Component {
   state = {
     loading: true,
     results: [],
-    columns: []
+    survey: {}
   }
 
   componentDidMount() {
     const surveyId = this.props.surveyId
-    api
-      .results(surveyId)
-      .then(resultsRsp => this.renderResults(surveyId, resultsRsp))
-  }
-
-  renderResults(surveyId, resultsRsp) {
-    const survey = new Model({})
-
-    const results = resultsRsp.map(r => JSON.parse(r || '{}'))
-
-    const columns = survey.getAllQuestions().map(q => ({
-      data: q.name,
-      sTitle: (q.title || '').trim(' ') || q.name,
-      mRender(data, type, row) {
-        survey.data = row
-        let displayValue = q.displayValue
-        return (
-          (typeof displayValue === 'string'
-            ? displayValue
-            : JSON.stringify(displayValue)) || ''
-        )
-      }
-    }))
-
-    // columns.push({
-    //   targets: -1,
-    //   data: null,
-    //   sortable: false,
-    //   defaultContent:
-    //     "<button style='min-width: 150px;'>Show in Survey</button>"
-    // });
-
-    this.setState({ loading: false, results, columns })
+    return Promise.all([api.survey(surveyId), api.results(surveyId)]).then(
+      ([survey, results]) => this.setState({ survey, results, loading: false })
+    )
   }
 
   render() {
+    let columns = []
+    let resultData = []
+
+    if (this.state.survey.json && this.state.results.length > 0) {
+      const survey = new Model(this.state.survey.json)
+      const questions = survey.getAllQuestions()
+
+      columns = questions.map(q => ({ Header: q.title, accessor: q.name }))
+
+      resultData = this.state.results.map(res => {
+        const answers = JSON.parse(res.json)
+        return Object.keys(answers).reduce((accumulator, qKey) => {
+          let result = answers[qKey]
+          result = result instanceof Array ? result.join(',') : result
+          accumulator[qKey] = result
+          return accumulator
+        }, {})
+      })
+    }
+
     return (
       <div id="home">
         <h1>Results</h1>
         <ResultTable
           loading={this.state.loading}
-          results={this.state.results}
-          columns={this.state.columns}
+          results={resultData}
+          columns={columns}
         />
       </div>
     )
