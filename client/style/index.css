@@ -54,3 +54,7 @@ body {
 #new-survey-dialog .mdc-text-field__input {
   height: 48px !important;
 }
+
+div.rt-td {
+  align-self: center;
+}

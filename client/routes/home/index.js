@@ -50,7 +50,7 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
       </IconButton>
     )
 
-  const centerCellStyle = () => ({
+  const styleAlignCenter = () => ({
     style: {
       textAlign: 'center'
     }
@@ -62,12 +62,13 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
   const columns = [
     {
       Header: 'Name',
-      accessor: 'name'
+      accessor: 'name',
+      getProps: styleAlignCenter
     },
     {
       Header: 'Owner',
       Cell: ({ original: { userId } }) => <UserLink userId={userId} />,
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     },
     {
       Header: 'Run',
@@ -77,14 +78,14 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
             Run
           </Button>
         ),
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     },
     {
       Header: 'Completions',
       Cell: ({ original: { completions, completionsDone } }) => (
         <span>{`${completionsDone} / ${completions}`}</span>
       ),
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     },
     {
       Header: 'Results',
@@ -93,17 +94,17 @@ const SurveyTable = ({ loading, surveys, onClickDelete }) => {
           table_chart
         </IconButton>
       ),
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     },
     {
       Header: 'Edit',
       Cell: AdminUserIcon('edit', editSurvey),
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     },
     {
       Header: 'Delete',
       Cell: AdminUserIcon('delete', deleteSurvey),
-      getProps: centerCellStyle
+      getProps: styleAlignCenter
     }
   ]
 
