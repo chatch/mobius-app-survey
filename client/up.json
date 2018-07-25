@@ -20,7 +20,7 @@
       "domain": "testnet.surveyrewards.network"
     },
     "public": {
-      "domain": "public.surveyrewards.network"
+      "domain": "surveyrewards.network"
     }
   }
 }
