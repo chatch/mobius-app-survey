@@ -9,7 +9,7 @@ import 'preact-material-components/TextField/style.css'
 import Spinner from './spinner'
 import api from '../api'
 
-const DEFAULT_COMPLETIONS = 1 // 50
+const DEFAULT_COMPLETIONS = 50
 const DEFAULT_FEE_PER_COMPLETION = 1
 
 const BASE_FEE = 10
@@ -116,9 +116,13 @@ export default class NewSurveyDialog extends Component {
                 onKeyup={this.onInputChange}
               />
 
-              <div>Fee: 10 MOBI</div>
-
-              <div>Total Cost: {this.state.totalFee} MOBI</div>
+              <div>Base Fee: 10 MOBI</div>
+              <div>
+                Total Fee:{' '}
+                <span style={{ textDecoration: 'underline' }}>
+                  {this.state.totalFee} MOBI
+                </span>
+              </div>
             </form>
           </Dialog.Body>
           <Dialog.Footer>
